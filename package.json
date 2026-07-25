@@ -1,0 +1,23 @@
+{
+  "name": "hitech-backend",
+  "version": "1.0.0",
+  "description": "Hi Quality Silencers Express Backend API for Namecheap Hosting",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "cors": "^2.8.5",
+    "body-parser": "^1.20.2"
+  },
+  "keywords": [
+    "express",
+    "namecheap",
+    "cpanel",
+    "silencer-backend"
+  ],
+  "author": "Hi Quality Silencers",
+  "license": "ISC"
+}

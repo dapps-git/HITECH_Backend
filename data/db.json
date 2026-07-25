@@ -1,0 +1,54 @@
+{
+  "products": [
+    {
+      "id": "prod-1",
+      "title": "PASSENGER CAR SILENCERS",
+      "image": "/images/prod_passenger_car.png",
+      "category": "Passenger Cars",
+      "desc": "High performance silencers for all passenger cars. Built for durability and perfect fit.",
+      "spec": "Galvanised / Stainless Steel 1.6mm"
+    },
+    {
+      "id": "prod-2",
+      "title": "SUV & PICKUP SILENCERS",
+      "image": "/images/prod_suv_pickup.png",
+      "category": "SUV & Pickup",
+      "desc": "Robust silencers designed for SUVs and pickup trucks for powerful performance.",
+      "spec": "Heavy Duty 2.0mm Steel"
+    },
+    {
+      "id": "prod-3",
+      "title": "LCV SILENCERS",
+      "image": "/images/prod_lcv.png",
+      "category": "Commercial LCV",
+      "desc": "OEM specification silencers for Light Commercial Vehicles. Strong. Reliable. Long lasting.",
+      "spec": "OEM Grade Flange Fitment"
+    },
+    {
+      "id": "prod-4",
+      "title": "TRUCK & BUS SILENCERS",
+      "image": "/images/prod_truck_bus.png",
+      "category": "Heavy Commercial",
+      "desc": "Heavy duty silencers for trucks and buses. Built for high performance and extended life.",
+      "spec": "Industrial Heavy Drum Assembly"
+    },
+    {
+      "id": "prod-5",
+      "title": "CATALYTIC CONVERTERS",
+      "image": "/images/prod_catalytic.png",
+      "category": "Emission Control",
+      "desc": "High quality catalytic converters for reduced emissions and better engine performance.",
+      "spec": "Metallic Honeycomb Core"
+    },
+    {
+      "id": "prod-6",
+      "title": "DPF / DOC / SCR SERVICES",
+      "image": "/images/prod_dpf_service.png",
+      "category": "DPF Restoration",
+      "desc": "Professional DPF cleaning, restoration & replacement services with advanced technology.",
+      "spec": "98%+ Soot & Ash Removal"
+    }
+  ],
+  "enquiries": [],
+  "bookings": []
+}
