@@ -512,8 +512,21 @@
           <input type="text" id="svcTitle" class="form-input" placeholder="e.g. Professional DPF Restoration" required />
         </div>
         <div class="form-group">
-          <label class="form-label">Description *</label>
-          <textarea id="svcDesc" class="form-textarea" rows="3" placeholder="Short description of the service..." required></textarea>
+          <label class="form-label">Short Description *</label>
+          <textarea id="svcDesc" class="form-textarea" rows="2" placeholder="Short description for the service card..." required></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Full Description (Inner Page)</label>
+          <textarea id="svcFullDesc" class="form-textarea" rows="4" placeholder="Full detailed description shown on the service inner page..."></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Inner Page Image URL</label>
+          <input type="url" id="svcImage" class="form-input" placeholder="https://... or /images/your-image.jpg" />
+          <small style="color:#6b7280; font-size:0.72rem; margin-top:4px; display:block;">Upload image to /public/images/ folder then paste the path here (e.g. /images/service-dpf-machine.jpg)</small>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Before/After Image URL (optional)</label>
+          <input type="url" id="svcBeforeAfterImage" class="form-input" placeholder="https://... or /images/your-before-after.jpg" />
         </div>
         <div class="form-group">
           <label class="form-label">Icon</label>
@@ -538,6 +551,7 @@
       </form>
     </div>
   </div>
+
 
   <!-- PRODUCT MODAL -->
   <div class="modal-backdrop" id="productModal">
