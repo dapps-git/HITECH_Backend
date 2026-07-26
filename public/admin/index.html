@@ -6,16 +6,15 @@
   <title>Hi-Quality Silencers — Admin Portal</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
     :root {
       --primary: #dc2626;
       --primary-dark: #b91c1c;
       --primary-light: #fff1f1;
       --primary-glow: rgba(220,38,38,0.18);
-      --bg: #f0f4f8;
+      --bg: #f8fafc;
       --card-bg: #ffffff;
       --sidebar-bg: #0f172a;
       --sidebar-border: rgba(255,255,255,0.06);
@@ -25,269 +24,249 @@
       --success: #22c55e;
       --success-bg: #f0fdf4;
       --warning-bg: #fffbeb;
-      --sidebar-w: 270px;
+      --sidebar-w: 260px;
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { font-size: 15px; }
-    body { font-family: 'Inter', 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+    body { font-family: 'Inter', 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
 
-    /* ─────────── LOGIN ─────────── */
+    /* ─────────── LOGIN SCREEN ─────────── */
     #loginScreen {
       position: fixed; inset: 0;
       background: linear-gradient(135deg, #0a0f1e 0%, #1a0a0a 100%);
       display: flex; align-items: center; justify-content: center; z-index: 9999; padding: 20px;
     }
     .login-box {
-      background: #ffffff; width: 100%; max-width: 420px; padding: 42px 40px;
-      border-radius: 20px; box-shadow: 0 30px 80px rgba(0,0,0,0.35); text-align: center;
-      animation: slideUp 0.4s ease;
+      background: #ffffff; width: 100%; max-width: 400px; padding: 36px 32px;
+      border-radius: 16px; box-shadow: 0 25px 60px rgba(0,0,0,0.35); text-align: center;
+      animation: slideUp 0.35s ease;
     }
-    @keyframes slideUp { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:translateY(0); } }
-    .login-logo { width:54px; height:54px; background:linear-gradient(135deg,#dc2626,#9f1239); border-radius:14px; margin:0 auto 18px; display:flex; align-items:center; justify-content:center; color:#fff; font-size:1.6rem; box-shadow:0 8px 20px rgba(220,38,38,0.35); }
-    .login-title { font-size: 1.55rem; font-weight: 800; color: #0f172a; margin-bottom: 6px; letter-spacing:-0.02em; }
-    .login-sub { font-size: 0.82rem; color: #64748b; margin-bottom: 28px; }
+    @keyframes slideUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+    .login-title { font-size: 1.45rem; font-weight: 800; color: #0f172a; margin-bottom: 4px; }
+    .login-sub { font-size: 0.8rem; color: #64748b; margin-bottom: 24px; }
 
     /* ─────────── FORMS ─────────── */
     .form-group { margin-bottom: 16px; text-align: left; }
-    .form-label { display: block; font-size: 0.78rem; font-weight: 700; color: #475569; margin-bottom: 6px; letter-spacing:0.03em; text-transform:uppercase; }
+    .form-label { display: block; font-size: 0.75rem; font-weight: 700; color: #475569; margin-bottom: 6px; letter-spacing:0.03em; text-transform:uppercase; }
     .form-input, .form-textarea, .form-select {
-      width: 100%; padding: 11px 14px; border: 1.5px solid var(--border); border-radius: 10px;
-      font-size: 0.9rem; outline: none; transition: all 0.2s; background: #f8fafc;
+      width: 100%; padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 8px;
+      font-size: 0.88rem; outline: none; transition: all 0.2s; background: #ffffff;
       color: var(--text); font-family: inherit;
     }
     .form-input:focus, .form-textarea:focus, .form-select:focus {
-      border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-glow); background:#fff;
+      border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-glow);
     }
 
     /* ─────────── BUTTONS ─────────── */
     .btn {
-      padding: 10px 20px; border-radius: 10px; font-weight: 700; font-size: 0.875rem;
+      padding: 9px 18px; border-radius: 8px; font-weight: 700; font-size: 0.85rem;
       cursor: pointer; border: none; transition: all 0.2s; display: inline-flex;
       align-items: center; justify-content: center; gap: 8px; font-family: inherit;
-      letter-spacing: 0.01em;
+      text-decoration: none;
     }
-    .btn-primary { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: #fff; width: 100%; box-shadow: 0 4px 14px var(--primary-glow); }
-    .btn-primary:hover { background: linear-gradient(135deg, #c81c1c, #991313); transform:translateY(-1px); box-shadow:0 6px 20px var(--primary-glow); }
+    .btn-primary { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: #fff; box-shadow: 0 4px 12px var(--primary-glow); }
+    .btn-primary:hover { background: linear-gradient(135deg, #c81c1c, #991313); transform:translateY(-1px); }
     .btn-outline { background: #fff; border: 1.5px solid var(--border); color: #334155; }
     .btn-outline:hover { background: #f1f5f9; border-color: #94a3b8; }
-    .btn-danger { background: linear-gradient(135deg, #ef4444, #dc2626); color: #fff; box-shadow:0 2px 8px rgba(239,68,68,0.2); }
-    .btn-danger:hover { background: linear-gradient(135deg, #dc2626, #b91c1c); }
-    .btn-success { background: linear-gradient(135deg, #22c55e, #16a34a); color: #fff; }
-    .btn-sm { padding: 6px 13px; font-size: 0.78rem; border-radius: 8px; }
+    .btn-danger { background: #ef4444; color: #fff; }
+    .btn-danger:hover { background: #dc2626; }
+    .btn-sm { padding: 6px 12px; font-size: 0.76rem; border-radius: 6px; }
 
     /* ─────────── LAYOUT ─────────── */
     .admin-layout { display: flex; min-height: 100vh; }
+
+    /* MOBILE NAV TOPBAR */
+    .mobile-topbar {
+      display: none; height: 60px; background: #0f172a; color: #fff;
+      padding: 0 16px; align-items: center; justify-content: space-between;
+      position: fixed; top: 0; left: 0; right: 0; z-index: 105;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    .mobile-menu-btn {
+      background: none; border: none; color: #fff; font-size: 1.25rem; cursor: pointer; padding: 6px;
+    }
 
     /* SIDEBAR */
     .sidebar {
       width: var(--sidebar-w);
       background: linear-gradient(180deg, #0f172a 0%, #1a0d0d 100%);
-      color: #fff;
-      padding: 0 0 24px;
-      display: flex; flex-direction: column; gap: 0;
+      color: #fff; padding: 0 0 24px;
+      display: flex; flex-direction: column;
       position: fixed; height: 100vh; left: 0; top: 0; overflow-y: auto;
       border-right: 1px solid rgba(255,255,255,0.04);
-      box-shadow: 4px 0 24px rgba(0,0,0,0.25);
-      z-index: 100;
+      z-index: 110; transition: transform 0.3s ease;
     }
     .sidebar-header {
-      padding: 24px 20px 20px;
+      padding: 22px 20px 18px;
       border-bottom: 1px solid rgba(255,255,255,0.06);
       margin-bottom: 8px;
     }
     .brand { display: flex; align-items: center; gap: 12px; }
     .brand-icon {
-      width: 40px; height: 40px;
+      width: 38px; height: 38px;
       background: linear-gradient(135deg, var(--primary), #9f1239);
-      border-radius: 10px; display: flex; align-items: center; justify-content: center;
-      color: #fff; font-size: 1.1rem; box-shadow: 0 4px 12px rgba(220,38,38,0.4);
+      border-radius: 8px; display: flex; align-items: center; justify-content: center;
+      color: #fff; font-size: 1.05rem; box-shadow: 0 4px 12px rgba(220,38,38,0.4);
       flex-shrink: 0;
     }
-    .brand-name { font-weight: 800; font-size: 1.05rem; line-height:1.1; }
-    .brand-sub { font-size: 0.68rem; color: #64748b; font-weight: 500; margin-top: 2px; }
+    .brand-name { font-weight: 800; font-size: 1rem; line-height: 1.1; }
+    .brand-sub { font-size: 0.65rem; color: #64748b; font-weight: 500; margin-top: 2px; }
     .nav-section-label {
       font-size: 0.65rem; font-weight: 700; color: #475569; letter-spacing: 0.08em;
-      text-transform: uppercase; padding: 12px 20px 6px;
+      text-transform: uppercase; padding: 14px 20px 6px;
     }
     .nav-menu { display: flex; flex-direction: column; gap: 2px; padding: 0 12px; flex: 1; }
     .nav-item {
-      display: flex; align-items: center; gap: 12px; padding: 11px 14px;
-      border-radius: 10px; color: #94a3b8; font-weight: 600; font-size: 0.875rem;
+      display: flex; align-items: center; gap: 12px; padding: 10px 14px;
+      border-radius: 8px; color: #94a3b8; font-weight: 600; font-size: 0.85rem;
       cursor: pointer; text-decoration: none; transition: all 0.2s; position: relative;
     }
-    .nav-item i { width: 18px; text-align: center; flex-shrink: 0; font-size: 0.95rem; }
+    .nav-item i { width: 18px; text-align: center; flex-shrink: 0; font-size: 0.9rem; }
     .nav-item:hover { background: rgba(255,255,255,0.07); color: #e2e8f0; }
     .nav-item.active {
-      background: linear-gradient(135deg, rgba(220,38,38,0.85), rgba(185,28,28,0.9));
-      color: #fff;
-      box-shadow: 0 4px 14px rgba(220,38,38,0.3);
+      background: linear-gradient(135deg, rgba(220,38,38,0.9), rgba(185,28,28,0.95));
+      color: #fff; box-shadow: 0 4px 12px rgba(220,38,38,0.3);
     }
-    .nav-item.active::before {
-      content:''; position:absolute; left:-12px; top:50%; transform:translateY(-50%);
-      width:3px; height:24px; background:#dc2626; border-radius:0 3px 3px 0;
-    }
-    .nav-divider { height:1px; background:rgba(255,255,255,0.06); margin:8px 20px; }
-    .sidebar-footer { padding: 16px 20px 0; margin-top: auto; }
-    .sidebar-user { display:flex; align-items:center; gap:12px; padding:12px; background:rgba(255,255,255,0.05); border-radius:10px; }
-    .user-avatar { width:36px; height:36px; background:linear-gradient(135deg,#dc2626,#9f1239); border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff; font-size:0.85rem; font-weight:800; flex-shrink:0; }
+    .sidebar-footer { padding: 16px 20px 0; margin-top: auto; border-top: 1px solid rgba(255,255,255,0.06); }
+    .sidebar-user { display:flex; align-items:center; gap:10px; }
+    .user-avatar { width:34px; height:34px; background:#dc2626; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff; font-size:0.8rem; font-weight:800; flex-shrink:0; }
     .user-info { flex:1; min-width:0; }
-    .user-name { font-size:0.82rem; font-weight:700; color:#e2e8f0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-    .user-role { font-size:0.7rem; color:#64748b; }
-    .logout-btn { background:none; border:none; color:#64748b; cursor:pointer; font-size:1rem; padding:4px; transition:color 0.2s; }
+    .user-name { font-size:0.8rem; font-weight:700; color:#e2e8f0; }
+    .logout-btn { background:none; border:none; color:#64748b; cursor:pointer; font-size:0.95rem; padding:4px; transition:color 0.2s; }
     .logout-btn:hover { color:#ef4444; }
 
-    /* MAIN */
-    .main-content { margin-left: var(--sidebar-w); flex: 1; padding: 28px 32px; }
+    /* MAIN CONTENT */
+    .main-content { margin-left: var(--sidebar-w); flex: 1; padding: 28px 32px; width: calc(100% - var(--sidebar-w)); }
 
     /* TOP HEADER */
     .header-bar {
       display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: 28px; padding-bottom: 20px;
-      border-bottom: 1px solid var(--border);
+      margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border);
     }
-    .page-title { font-size: 1.45rem; font-weight: 800; color: #0f172a; letter-spacing:-0.02em; }
-    .page-sub { font-size: 0.82rem; color: #64748b; margin-top: 4px; }
+    .page-title { font-size: 1.35rem; font-weight: 800; color: #0f172a; letter-spacing:-0.01em; }
+    .page-sub { font-size: 0.8rem; color: #64748b; margin-top: 3px; }
     .header-actions { display:flex; gap:10px; align-items:center; }
     .header-badge {
-      background:#f1f5f9; border:1px solid var(--border); color:#475569;
-      font-size:0.78rem; font-weight:700; padding:6px 12px; border-radius:8px;
+      background:#ffffff; border:1px solid var(--border); color:#475569;
+      font-size:0.75rem; font-weight:700; padding:6px 12px; border-radius:6px;
       display:flex; align-items:center; gap:6px;
     }
     .live-dot { width:7px; height:7px; background:#22c55e; border-radius:50%; animation:pulse 1.8s infinite; }
     @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
 
-    /* ─────────── STAT CARDS ─────────── */
-    .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-bottom: 28px; }
+    /* ─────────── STAT CARDS (3 CARDS) ─────────── */
+    .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
     .stat-card {
-      background: var(--card-bg); padding: 22px; border-radius: 14px;
-      border: 1px solid var(--border);
-      display: flex; align-items: center; gap: 16px;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.04);
-      transition: all 0.25s; cursor: default; position: relative; overflow: hidden;
+      background: var(--card-bg); padding: 20px; border-radius: 12px;
+      border: 1px solid var(--border); display: flex; align-items: center; gap: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.03); transition: all 0.2s;
     }
-    .stat-card::before {
-      content:''; position:absolute; top:0; left:0; right:0; height:3px;
-      background: linear-gradient(90deg, var(--primary), #9f1239);
-      opacity: 0; transition: opacity 0.2s;
-    }
-    .stat-card:hover { box-shadow: 0 6px 20px rgba(0,0,0,0.08); transform:translateY(-2px); }
-    .stat-card:hover::before { opacity:1; }
+    .stat-card:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.06); }
     .stat-icon {
-      width: 52px; height: 52px; border-radius: 13px;
-      background: linear-gradient(135deg, var(--primary-light), #ffe4e4);
-      color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.3rem;
-      flex-shrink: 0;
+      width: 48px; height: 48px; border-radius: 10px;
+      background: #fef2f2; color: var(--primary);
+      display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0;
     }
-    .stat-val { font-size: 1.7rem; font-weight: 800; color: #0f172a; line-height:1; }
-    .stat-lbl { font-size: 0.78rem; color: #64748b; font-weight: 600; margin-top:4px; }
+    .stat-val { font-size: 1.6rem; font-weight: 800; color: #0f172a; line-height: 1; }
+    .stat-lbl { font-size: 0.75rem; color: #64748b; font-weight: 600; margin-top: 4px; }
 
-    /* ─────────── QUICK ACTION CARDS ─────────── */
-    .action-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; padding: 20px; }
+    /* ─────────── QUICK ACTIONS ─────────── */
+    .action-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; padding: 18px; }
     .action-card {
-      background: #f8fafc; border: 1.5px dashed var(--border); border-radius: 12px;
-      padding: 22px; display: flex; flex-direction: column; gap: 10px;
-      cursor: pointer; transition: all 0.22s; text-align: left;
+      background: #ffffff; border: 1.5px solid var(--border); border-radius: 10px;
+      padding: 18px; display: flex; flex-direction: column; gap: 8px;
+      cursor: pointer; transition: all 0.2s; text-align: left;
     }
-    .action-card:hover { background:#fff; border-color: var(--primary); box-shadow:0 6px 20px var(--primary-glow); transform:translateY(-2px); }
-    .action-card-icon { width:44px; height:44px; border-radius:11px; display:flex; align-items:center; justify-content:center; font-size:1.1rem; }
-    .action-card h4 { font-size:0.9rem; font-weight:800; color:#0f172a; }
-    .action-card p { font-size:0.78rem; color:#64748b; line-height:1.4; }
+    .action-card:hover { border-color: var(--primary); box-shadow:0 4px 16px var(--primary-glow); transform:translateY(-2px); }
+    .action-card-icon { width:40px; height:40px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:1rem; }
+    .action-card h4 { font-size:0.85rem; font-weight:800; color:#0f172a; }
+    .action-card p { font-size:0.75rem; color:#64748b; line-height:1.4; }
 
     /* ─────────── PANELS & TABLES ─────────── */
     .card-panel {
-      background: var(--card-bg); border-radius: 16px; border: 1px solid var(--border);
-      overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.04); margin-bottom: 24px;
+      background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border);
+      overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.03); margin-bottom: 24px;
     }
     .panel-header {
-      padding: 16px 22px; border-bottom: 1px solid var(--border);
+      padding: 16px 20px; border-bottom: 1px solid var(--border);
       display: flex; align-items: center; justify-content: space-between;
-      background: #fafbfc;
+      background: #ffffff;
     }
-    .panel-title { font-size: 0.98rem; font-weight: 800; color: #0f172a; display:flex; align-items:center; gap:8px; }
+    .panel-title { font-size: 0.92rem; font-weight: 800; color: #0f172a; display:flex; align-items:center; gap:8px; }
     .panel-title i { color: var(--primary); }
-    table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.85rem; }
+    .table-wrapper { width: 100%; overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.82rem; min-width: 600px; }
     thead { background: #f8fafc; }
-    th { padding: 11px 20px; font-weight: 700; color: #64748b; font-size:0.75rem; letter-spacing:0.05em; text-transform:uppercase; border-bottom: 1px solid var(--border); }
-    td { padding: 14px 20px; border-bottom: 1px solid #f1f5f9; color: #334155; vertical-align: middle; }
-    tr:last-child td { border-bottom: none; }
-    tbody tr { transition: background 0.15s; }
+    th { padding: 11px 16px; font-weight: 700; color: #64748b; font-size: 0.72rem; letter-spacing:0.05em; text-transform:uppercase; border-bottom: 1px solid var(--border); }
+    td { padding: 12px 16px; border-bottom: 1px solid #f1f5f9; color: #334155; vertical-align: middle; }
+    tbody tr:last-child td { border-bottom: none; }
     tbody tr:hover td { background: #f8fafc; }
 
-    .badge { padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing:0.04em; }
+    .badge { padding: 3px 8px; border-radius: 4px; font-size: 0.68rem; font-weight: 700; text-transform: uppercase; }
     .badge-success { background: #dcfce7; color: #15803d; }
     .badge-warning { background: #fef3c7; color: #92400e; }
-    .badge-info { background: #dbeafe; color: #1d4ed8; }
-
-    /* Empty state */
-    .empty-state { text-align:center; padding:48px 20px; }
-    .empty-state i { font-size:2.5rem; color:#cbd5e1; margin-bottom:14px; display:block; }
-    .empty-state h4 { font-size:0.95rem; font-weight:700; color:#94a3b8; margin-bottom:6px; }
-    .empty-state p { font-size:0.82rem; color:#cbd5e1; }
 
     /* ─────────── MODALS ─────────── */
     .modal-backdrop {
-      position: fixed; inset: 0; background: rgba(10,15,28,0.65); backdrop-filter: blur(6px);
-      display: none; align-items: center; justify-content: center; z-index: 10000; padding: 20px;
+      position: fixed; inset: 0; background: rgba(15,23,42,0.6); backdrop-filter: blur(4px);
+      display: none; align-items: center; justify-content: center; z-index: 10000; padding: 16px;
     }
-    .modal-backdrop.show { display: flex; animation: fadeIn 0.2s ease; }
-    @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+    .modal-backdrop.show { display: flex; }
     .modal {
-      background: #ffffff; border-radius: 18px; width: 100%; max-width: 560px;
-      max-height: 90vh; overflow-y: auto; padding: 30px;
-      box-shadow: 0 24px 60px rgba(0,0,0,0.18); animation: modalIn 0.25s ease;
+      background: #ffffff; border-radius: 14px; width: 100%; max-width: 540px;
+      max-height: 90vh; overflow-y: auto; padding: 24px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.2);
     }
-    @keyframes modalIn { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
-    .modal.modal-lg { max-width: 940px; }
+    .modal.modal-lg { max-width: 860px; }
     .modal-header {
       display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: 22px; padding-bottom: 16px; border-bottom: 1px solid var(--border);
+      margin-bottom: 18px; padding-bottom: 12px; border-bottom: 1px solid var(--border);
     }
-    .modal-title { font-size: 1.15rem; font-weight: 800; color:#0f172a; }
+    .modal-title { font-size: 1.05rem; font-weight: 800; color:#0f172a; }
     .close-btn {
-      background: #f1f5f9; border: none; width:32px; height:32px; border-radius:8px;
-      font-size: 1rem; cursor: pointer; color: #64748b; transition:all 0.2s;
-      display:flex; align-items:center; justify-content:center;
+      background: #f1f5f9; border: none; width:28px; height:28px; border-radius:6px;
+      font-size: 1rem; cursor: pointer; color: #64748b; display:flex; align-items:center; justify-content:center;
     }
     .close-btn:hover { background:#e2e8f0; color:#0f172a; }
 
-    /* Rich text toolbar */
     .tool-btn {
-      background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 6px;
-      padding: 5px 11px; font-size: 0.8rem; font-weight: 700; cursor: pointer; color: #334155;
-      transition: all 0.15s ease; outline: none; font-family: inherit;
+      background: #ffffff; border: 1px solid #cbd5e1; border-radius: 4px;
+      padding: 4px 9px; font-size: 0.75rem; font-weight: 700; cursor: pointer; color: #334155;
     }
-    .tool-btn:hover { background: #e2e8f0; color: #0f172a; border-color: #94a3b8; }
-    .tool-btn.active-tool { background: var(--primary); color:#fff; border-color:var(--primary); }
 
-    /* Scrollbar */
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-
-    @media (max-width: 1100px) {
-      .stats-grid { grid-template-columns: repeat(2, 1fr); }
-      .action-grid { grid-template-columns: repeat(2, 1fr); }
-    }
+    /* MOBILE RESPONSIVE MEDIA QUERIES */
     @media (max-width: 900px) {
-      :root { --sidebar-w: 72px; }
-      .brand-name, .brand-sub, .nav-text, .nav-section-label, .sidebar-footer { display: none; }
-      .nav-item { justify-content: center; padding: 12px; }
-      .nav-item.active::before { display: none; }
-      .sidebar-header { padding: 18px 10px; justify-content: center; display:flex; }
+      .mobile-topbar { display: flex; }
+      .sidebar {
+        transform: translateX(-100%);
+        top: 60px; height: calc(100vh - 60px);
+      }
+      .sidebar.open { transform: translateX(0); }
+      .main-content {
+        margin-left: 0; width: 100%; padding: 76px 16px 24px;
+      }
       .stats-grid { grid-template-columns: 1fr; }
-      .action-grid { grid-template-columns: 1fr 1fr; }
-      .main-content { padding: 16px; }
+      .action-grid { grid-template-columns: 1fr; }
+      .header-bar { flex-direction: column; align-items: flex-start; gap: 10px; }
     }
   </style>
 </head>
 <body>
 
+  <!-- MOBILE TOPBAR -->
+  <div class="mobile-topbar">
+    <div style="display:flex; align-items:center; gap:10px;">
+      <button class="mobile-menu-btn" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
+      <span style="font-weight:800; font-size:0.95rem;">Hi-Quality Admin</span>
+    </div>
+    <a href="https://hiquality.com" target="_blank" style="color:#ef4444; font-size:0.8rem; font-weight:700; text-decoration:none;">View Site ↗</a>
+  </div>
+
   <!-- LOGIN OVERLAY -->
   <div id="loginScreen">
     <div class="login-box">
-      <div style="width:50px; height:50px; background:#dc2626; border-radius:12px; margin:0 auto 16px; display:flex; align-items:center; justify-content:center; color:#fff; font-size:1.5rem;">
+      <div style="width:48px; height:48px; background:#dc2626; border-radius:10px; margin:0 auto 14px; display:flex; align-items:center; justify-content:center; color:#fff; font-size:1.4rem;">
         <i class="fa-solid fa-gears"></i>
       </div>
       <h1 class="login-title">Admin Portal</h1>
@@ -302,7 +281,7 @@
           <label class="form-label">Password</label>
           <input type="password" id="loginPassword" class="form-input" placeholder="••••••••" value="admin123" required />
         </div>
-        <button type="submit" class="btn btn-primary" style="margin-top:10px;">
+        <button type="submit" class="btn btn-primary" style="width:100%; margin-top:6px;">
           <i class="fa-solid fa-right-to-bracket"></i> Sign In to Dashboard
         </button>
       </form>
@@ -312,7 +291,7 @@
   <!-- ADMIN MAIN LAYOUT -->
   <div class="admin-layout">
     <!-- SIDEBAR -->
-    <aside class="sidebar">
+    <aside class="sidebar" id="sidebar">
       <div class="sidebar-header">
         <div class="brand">
           <div class="brand-icon"><i class="fa-solid fa-shield-halved"></i></div>
@@ -322,7 +301,7 @@
           </div>
         </div>
       </div>
-      <div class="nav-section-label">Main Menu</div>
+      <div class="nav-section-label">Main Navigation</div>
 
       <nav class="nav-menu">
         <div class="nav-item active" onclick="switchTab('dashboard')">
@@ -332,19 +311,18 @@
           <i class="fa-solid fa-list-check"></i><span class="nav-text">Services (Dynamic)</span>
         </div>
         <div class="nav-item" onclick="switchTab('products')">
-          <i class="fa-solid fa-box-archive"></i><span class="nav-text">Products</span>
+          <i class="fa-solid fa-box-archive"></i><span class="nav-text">Products Catalog</span>
         </div>
         <div class="nav-item" onclick="switchTab('blogs')">
           <i class="fa-solid fa-newspaper"></i><span class="nav-text">Blog Posts</span>
         </div>
       </nav>
-      <div class="nav-divider"></div>
+
       <div class="sidebar-footer">
         <div class="sidebar-user">
           <div class="user-avatar">A</div>
           <div class="user-info">
             <div class="user-name">Administrator</div>
-            <div class="user-role">Super Admin</div>
           </div>
           <button class="logout-btn" onclick="logout()" title="Sign Out"><i class="fa-solid fa-right-from-bracket"></i></button>
         </div>
@@ -357,18 +335,18 @@
       <!-- TOP HEADER BAR -->
       <div class="header-bar">
         <div>
-          <h1 class="page-title" id="pageTitle">Dashboard Overview</h1>
+          <h1 class="page-title" id="pageTitle">DASHBOARD OVERVIEW</h1>
           <p class="page-sub" id="pageSub">Real-time control panel — Hi-Quality Silencers</p>
         </div>
         <div class="header-actions">
-          <div class="header-badge"><div class="live-dot"></div> Live</div>
-          <a href="https://hiquality.com" target="_blank" class="btn btn-outline btn-sm" style="text-decoration:none;">
+          <div class="header-badge"><div class="live-dot"></div> API Live</div>
+          <a href="https://hiquality.com" target="_blank" class="btn btn-outline btn-sm">
             <i class="fa-solid fa-globe"></i> View Website
           </a>
         </div>
       </div>
 
-      <!-- STATS OVERVIEW (ONLY 3 CARDS: SERVICES, PRODUCTS, BLOGS) -->
+      <!-- STATS OVERVIEW (3 CARDS) -->
       <div class="stats-grid" id="statsGrid">
         <div class="stat-card">
           <div class="stat-icon"><i class="fa-solid fa-wrench"></i></div>
@@ -403,9 +381,9 @@
             <div class="action-card" onclick="switchTab('services'); openServiceModal();">
               <div class="action-card-icon" style="background:#fff1f1; color:#dc2626;"><i class="fa-solid fa-list-check"></i></div>
               <h4>Add New Service</h4>
-              <p>Create and publish a new service card on the homepage services section.</p>
+              <p>Create and publish a new service card on the website services section.</p>
             </div>
-            <div class="action-card" onclick="openProductModal();">
+            <div class="action-card" onclick="switchTab('products'); openProductModal();">
               <div class="action-card-icon" style="background:#eff6ff; color:#2563eb;"><i class="fa-solid fa-box-archive"></i></div>
               <h4>Add New Product</h4>
               <p>Upload a silencer product model with image, description, and specs.</p>
@@ -420,19 +398,19 @@
 
         <div class="card-panel">
           <div class="panel-header">
-            <h2 class="panel-title"><i class="fa-solid fa-circle-info"></i> Website Overview</h2>
+            <h2 class="panel-title"><i class="fa-solid fa-circle-info"></i> System Overview</h2>
           </div>
-          <div style="padding:20px; display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px;">
-            <div style="background:#f8fafc; border-radius:10px; padding:16px; border:1px solid var(--border);">
-              <div style="font-size:0.72rem; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:6px;">Live URL</div>
+          <div style="padding:18px; display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:14px;">
+            <div style="background:#f8fafc; border-radius:8px; padding:14px; border:1px solid var(--border);">
+              <div style="font-size:0.7rem; font-weight:700; color:#64748b; text-transform:uppercase; margin-bottom:4px;">Website URL</div>
               <a href="https://hiquality.com" target="_blank" style="color:#2563eb; font-size:0.85rem; font-weight:600; text-decoration:none;">hiquality.com ↗</a>
             </div>
-            <div style="background:#f8fafc; border-radius:10px; padding:16px; border:1px solid var(--border);">
-              <div style="font-size:0.72rem; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:6px;">Backend Status</div>
+            <div style="background:#f8fafc; border-radius:8px; padding:14px; border:1px solid var(--border);">
+              <div style="font-size:0.7rem; font-weight:700; color:#64748b; text-transform:uppercase; margin-bottom:4px;">Backend Status</div>
               <div style="color:#16a34a; font-size:0.85rem; font-weight:700; display:flex; align-items:center; gap:6px;"><div class="live-dot"></div> Online</div>
             </div>
-            <div style="background:#f8fafc; border-radius:10px; padding:16px; border:1px solid var(--border);">
-              <div style="font-size:0.72rem; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:6px;">Admin Panel</div>
+            <div style="background:#f8fafc; border-radius:8px; padding:14px; border:1px solid var(--border);">
+              <div style="font-size:0.7rem; font-weight:700; color:#64748b; text-transform:uppercase; margin-bottom:4px;">Admin Route</div>
               <div style="color:#0f172a; font-size:0.85rem; font-weight:700;">tweaki.pw/hiquality/admin</div>
             </div>
           </div>
@@ -443,24 +421,26 @@
       <div id="tabServices" style="display:none;">
         <div class="card-panel">
           <div class="panel-header">
-            <h2 class="panel-title"><i class="fa-solid fa-list-check"></i> Manage Website Services</h2>
+            <h2 class="panel-title"><i class="fa-solid fa-list-check"></i> Dynamic Services</h2>
             <button class="btn btn-primary btn-sm" onclick="openServiceModal()">
               <i class="fa-solid fa-plus"></i> Add Service
             </button>
           </div>
-          <table id="servicesTable">
-            <thead>
-              <tr>
-                <th>Icon</th>
-                <th>Service Title</th>
-                <th>Description</th>
-                <th>Order</th>
-                <th>Visibility</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
+          <div class="table-wrapper">
+            <table id="servicesTable">
+              <thead>
+                <tr>
+                  <th>Icon</th>
+                  <th>Service Title</th>
+                  <th>Description</th>
+                  <th>Order</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
         </div>
       </div>
 
@@ -468,22 +448,24 @@
       <div id="tabProducts" style="display:none;">
         <div class="card-panel">
           <div class="panel-header">
-            <h2 class="panel-title"><i class="fa-solid fa-box-archive"></i> Product Catalog</h2>
+            <h2 class="panel-title"><i class="fa-solid fa-box-archive"></i> Products Catalog</h2>
             <button class="btn btn-primary btn-sm" onclick="openProductModal()">
               <i class="fa-solid fa-plus"></i> Add Product
             </button>
           </div>
-          <table id="productsTable">
-            <thead>
-              <tr>
-                <th>Title</th>
-                <th>Category</th>
-                <th>Specification</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
+          <div class="table-wrapper">
+            <table id="productsTable">
+              <thead>
+                <tr>
+                  <th>Product Model</th>
+                  <th>Category</th>
+                  <th>Specification</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
         </div>
       </div>
 
@@ -496,40 +478,20 @@
               <i class="fa-solid fa-plus"></i> Create Blog Post
             </button>
           </div>
-          <table id="blogsTable">
-            <thead>
-              <tr>
-                <th>Title</th>
-                <th>Category</th>
-                <th>Publish Date</th>
-                <th>Visibility</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- TAB 5: ENQUIRIES & LEADS TAB -->
-      <div id="tabLeads" style="display:none;">
-        <div class="card-panel">
-          <div class="panel-header">
-            <h2 class="panel-title"><i class="fa-solid fa-envelope"></i> Contact Enquiries</h2>
+          <div class="table-wrapper">
+            <table id="blogsTable">
+              <thead>
+                <tr>
+                  <th>Title</th>
+                  <th>Category</th>
+                  <th>Publish Date</th>
+                  <th>Visibility</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
           </div>
-          <table id="enquiriesTable">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Phone</th>
-                <th>Product/Interest</th>
-                <th>Message</th>
-                <th>Date</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
         </div>
       </div>
 
@@ -569,9 +531,9 @@
           <label class="form-label">Display Order</label>
           <input type="number" id="svcOrder" class="form-input" value="1" min="1" />
         </div>
-        <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:24px;">
+        <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
           <button type="button" class="btn btn-outline" onclick="closeModal('serviceModal')">Cancel</button>
-          <button type="submit" class="btn btn-primary" style="width:auto;">Save Service</button>
+          <button type="submit" class="btn btn-primary">Save Service</button>
         </div>
       </form>
     </div>
@@ -579,7 +541,7 @@
 
   <!-- PRODUCT MODAL -->
   <div class="modal-backdrop" id="productModal">
-    <div class="modal modal-lg" style="max-width: 720px;">
+    <div class="modal modal-lg">
       <div class="modal-header">
         <h3 class="modal-title" id="productModalTitle"><i class="fa-solid fa-box-archive" style="color:#dc2626; margin-right:8px;"></i> Add Product</h3>
         <button class="close-btn" onclick="closeModal('productModal')">&times;</button>
@@ -587,7 +549,7 @@
       <form id="productForm">
         <input type="hidden" id="prodId" />
         
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px;">
           <div class="form-group">
             <label class="form-label">Product Name *</label>
             <input type="text" id="prodTitle" class="form-input" placeholder="e.g. PASSENGER CAR SILENCER" required />
@@ -598,10 +560,10 @@
           </div>
         </div>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px;">
           <div class="form-group">
             <label class="form-label">Specification</label>
-            <input type="text" id="prodSpec" class="form-input" placeholder="e.g. 98%+ Soot & Ash Removal" />
+            <input type="text" id="prodSpec" class="form-input" placeholder="e.g. Galvanised Steel 1.6mm" />
           </div>
           <div class="form-group">
             <label class="form-label">Product Image (Cloudinary Upload)</label>
@@ -613,32 +575,30 @@
               </label>
             </div>
             <div id="prodImagePreview" style="margin-top:8px; display:none;">
-              <img src="" style="height:60px; border-radius:6px; border:1px solid #e2e8f0; object-fit:cover;" />
+              <img src="" style="height:60px; border-radius:6px; border:1px solid #e2e8f0; object-fit:contain;" />
             </div>
           </div>
         </div>
 
-        <!-- Short Description (2-line Homepage Card Summary) -->
         <div class="form-group">
-          <label class="form-label">Short Description (2-Line Summary for Homepage Card) *</label>
-          <textarea id="prodShortDesc" class="form-textarea" rows="2" placeholder="Brief 2-line summary shown on homepage cards..." required></textarea>
+          <label class="form-label">Short Description (Summary for Grid Card) *</label>
+          <textarea id="prodShortDesc" class="form-textarea" rows="2" placeholder="Brief summary shown on product grid card..." required></textarea>
         </div>
 
-        <!-- Big Full Description (Shown on Product Inner Page) -->
         <div class="form-group">
-          <label class="form-label">Big Full Description (Shown on Product Detail Inner Page) *</label>
-          <textarea id="prodFullDesc" class="form-textarea" rows="5" placeholder="Detailed multi-paragraph description showing features, technical specs, material construction, and vehicle compatibility..." required></textarea>
+          <label class="form-label">Full Description (Shown on Product Detail Page) *</label>
+          <textarea id="prodFullDesc" class="form-textarea" rows="4" placeholder="Detailed multi-paragraph description showing features, technical specs, material construction, and vehicle compatibility..." required></textarea>
         </div>
 
-        <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:24px;">
+        <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
           <button type="button" class="btn btn-outline" onclick="closeModal('productModal')">Cancel</button>
-          <button type="submit" class="btn btn-primary" style="width:auto;"><i class="fa-solid fa-save"></i> Save Product</button>
+          <button type="submit" class="btn btn-primary"><i class="fa-solid fa-save"></i> Save Product</button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- BLOG MODAL (SHOPIFY STYLE RICH EDITOR) -->
+  <!-- BLOG MODAL -->
   <div class="modal-backdrop" id="blogModal">
     <div class="modal modal-lg">
       <div class="modal-header">
@@ -648,11 +608,10 @@
       <form id="blogForm">
         <input type="hidden" id="blogId" />
 
-        <!-- Row 1: Title, Category, Visibility -->
-        <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 14px;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px;">
           <div class="form-group">
             <label class="form-label">Blog Title *</label>
-            <input type="text" id="blogTitle" class="form-input" placeholder="e.g. Complete DPF Cleaning & Maintenance Guide 2026" required oninput="updateSeoPreview()" />
+            <input type="text" id="blogTitle" class="form-input" placeholder="e.g. DPF Maintenance Guide 2026" required oninput="updateSeoPreview()" />
           </div>
           <div class="form-group">
             <label class="form-label">Category</label>
@@ -667,142 +626,88 @@
           </div>
         </div>
 
-        <!-- RICH TEXT CONTENT EDITOR WITH TOOLBAR ("style chngng options") -->
         <div class="form-group" style="margin-top: 10px;">
-          <label class="form-label">Blog Content &amp; Description * (Rich Formatting Toolbar)</label>
-          <div class="editor-toolbar" style="background:#f1f5f9; border:1px solid #cbd5e1; border-bottom:none; border-top-left-radius:8px; border-top-right-radius:8px; padding:8px 12px; display:flex; flex-wrap:wrap; gap:6px; align-items:center;">
+          <label class="form-label">Blog Content * (Rich Formatting Toolbar)</label>
+          <div class="editor-toolbar" style="background:#f1f5f9; border:1px solid #cbd5e1; border-bottom:none; border-top-left-radius:6px; border-top-right-radius:6px; padding:6px 10px; display:flex; flex-wrap:wrap; gap:5px; align-items:center;">
             <button type="button" class="tool-btn" onclick="execCmd('bold')" title="Bold"><i class="fa-solid fa-bold"></i></button>
             <button type="button" class="tool-btn" onclick="execCmd('italic')" title="Italic"><i class="fa-solid fa-italic"></i></button>
             <button type="button" class="tool-btn" onclick="execCmd('underline')" title="Underline"><i class="fa-solid fa-underline"></i></button>
             <span style="color:#cbd5e1;">|</span>
-            <button type="button" class="tool-btn" onclick="execCmd('formatBlock', '<h2>')" title="Heading 2">H2</button>
-            <button type="button" class="tool-btn" onclick="execCmd('formatBlock', '<h3>')" title="Heading 3">H3</button>
-            <button type="button" class="tool-btn" onclick="execCmd('formatBlock', '<p>')" title="Paragraph">P</button>
+            <button type="button" class="tool-btn" onclick="execCmd('formatBlock', '<h2>')">H2</button>
+            <button type="button" class="tool-btn" onclick="execCmd('formatBlock', '<h3>')">H3</button>
+            <button type="button" class="tool-btn" onclick="execCmd('formatBlock', '<p>')">P</button>
             <span style="color:#cbd5e1;">|</span>
-            <button type="button" class="tool-btn" onclick="execCmd('insertUnorderedList')" title="Bullet List"><i class="fa-solid fa-list-ul"></i></button>
-            <button type="button" class="tool-btn" onclick="execCmd('insertOrderedList')" title="Numbered List"><i class="fa-solid fa-list-ol"></i></button>
+            <button type="button" class="tool-btn" onclick="execCmd('insertUnorderedList')"><i class="fa-solid fa-list-ul"></i></button>
+            <button type="button" class="tool-btn" onclick="execCmd('insertOrderedList')"><i class="fa-solid fa-list-ol"></i></button>
             <span style="color:#cbd5e1;">|</span>
-            <label title="Text Color" style="cursor:pointer; display:inline-flex; align-items:center; gap:4px; font-size:0.8rem; font-weight:700; color:#475569;">
-              <i class="fa-solid fa-palette"></i>
-              <input type="color" onchange="execCmd('foreColor', this.value)" style="width:24px; height:24px; border:none; background:none; cursor:pointer;" />
-            </label>
-            <button type="button" class="tool-btn" onclick="insertLinkPrompt()" title="Insert Link"><i class="fa-solid fa-link"></i></button>
-            <button type="button" class="tool-btn" onclick="insertImagePrompt()" title="Insert Image"><i class="fa-solid fa-image"></i></button>
-            <button type="button" class="tool-btn" onclick="execCmd('removeFormat')" title="Clear Formatting"><i class="fa-solid fa-eraser"></i></button>
+            <button type="button" class="tool-btn" onclick="insertLinkPrompt()"><i class="fa-solid fa-link"></i></button>
+            <button type="button" class="tool-btn" onclick="insertImagePrompt()"><i class="fa-solid fa-image"></i></button>
+            <button type="button" class="tool-btn" onclick="execCmd('removeFormat')"><i class="fa-solid fa-eraser"></i></button>
           </div>
-          <div id="blogEditor" contenteditable="true" style="min-height: 180px; max-height: 320px; overflow-y: auto; background: #ffffff; border: 1px solid #cbd5e1; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; padding: 14px; outline: none; font-size: 0.9rem; line-height: 1.6;" oninput="syncEditorContent()"></div>
+          <div id="blogEditor" contenteditable="true" style="min-height: 160px; max-height: 280px; overflow-y: auto; background: #ffffff; border: 1px solid #cbd5e1; border-bottom-left-radius: 6px; border-bottom-right-radius: 6px; padding: 12px; outline: none; font-size: 0.88rem; line-height: 1.6;" oninput="syncEditorContent()"></div>
           <textarea id="blogContent" style="display:none;"></textarea>
         </div>
 
-        <!-- Excerpt -->
         <div class="form-group">
           <label class="form-label">Excerpt / Post Summary</label>
           <textarea id="blogExcerpt" class="form-textarea" rows="2" placeholder="Brief summary to display on the blog listing card..." oninput="updateSeoPreview()"></textarea>
         </div>
 
-        <!-- IMAGES SECTION (Main + Reference Images) -->
-        <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:16px; margin-bottom:18px;">
-          <h4 style="font-size:0.95rem; font-weight:800; color:#0f172a; margin-bottom:12px;"><i class="fa-solid fa-images" style="color:#dc2626; margin-right:6px;"></i> Main &amp; Reference Images</h4>
-
-          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
-            <!-- Main Featured Image -->
-            <div>
-              <label class="form-label">Main Featured Image (Cloudinary Upload)</label>
-              <div style="display:flex; gap:8px;">
-                <input type="text" id="blogFeaturedImage" class="form-input" placeholder="https://res.cloudinary.com/..." />
-                <label class="btn btn-outline" style="cursor:pointer; white-space:nowrap;">
-                  <i class="fa-solid fa-upload"></i> Upload
-                  <input type="file" accept="image/*" style="display:none;" onchange="uploadImage(this, 'blogFeaturedImage', 'blogMainImgPreviewContainer')" />
-                </label>
-              </div>
-              <div id="blogMainImgPreviewContainer" style="margin-top:8px;">
-                <img id="blogMainImgPreview" src="/images/bg.webp" style="max-height:80px; border-radius:6px; border:1px solid #cbd5e1;" />
-              </div>
-            </div>
-
-            <!-- Reference Images -->
-            <div>
-              <label class="form-label">Reference Images &amp; Technical Diagrams</label>
-              <div style="display:flex; gap:8px;">
-                <input type="text" id="newRefImgUrl" class="form-input" placeholder="Paste image URL..." />
-                <label class="btn btn-outline" style="cursor:pointer; white-space:nowrap;" title="Upload Image">
-                  <i class="fa-solid fa-upload"></i> Upload
-                  <input type="file" accept="image/*" style="display:none;" onchange="uploadRefImageFile(this)" />
-                </label>
-                <button type="button" class="btn btn-primary" onclick="addRefImageUrl()" style="width:auto;"><i class="fa-solid fa-plus"></i></button>
-              </div>
-              <div id="refImagesList" style="display:flex; flex-wrap:wrap; gap:8px; margin-top:8px;"></div>
-            </div>
+        <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:14px; margin-bottom:16px;">
+          <h4 style="font-size:0.88rem; font-weight:800; color:#0f172a; margin-bottom:10px;"><i class="fa-solid fa-images" style="color:#dc2626; margin-right:6px;"></i> Featured Image</h4>
+          <div style="display:flex; gap:8px;">
+            <input type="text" id="blogFeaturedImage" class="form-input" placeholder="https://res.cloudinary.com/..." />
+            <label class="btn btn-outline" style="cursor:pointer; white-space:nowrap;">
+              <i class="fa-solid fa-upload"></i> Upload
+              <input type="file" accept="image/*" style="display:none;" onchange="uploadImage(this, 'blogFeaturedImage', 'blogMainImgPreviewContainer')" />
+            </label>
+          </div>
+          <div id="blogMainImgPreviewContainer" style="margin-top:8px;">
+            <img id="blogMainImgPreview" src="/images/bg.webp" style="max-height:70px; border-radius:6px; border:1px solid #cbd5e1;" />
           </div>
         </div>
 
-        <!-- SEO & META SECTION -->
-        <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:16px; margin-bottom:18px;">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-            <h4 style="font-size:0.95rem; font-weight:800; color:#0f172a;"><i class="fa-solid fa-magnifying-glass" style="color:#2563eb; margin-right:6px;"></i> Search Engine Listing (SEO &amp; Meta)</h4>
-            <span style="font-size:0.75rem; color:#64748b;">Live Google Preview</span>
+        <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:14px; margin-bottom:16px;">
+          <h4 style="font-size:0.88rem; font-weight:800; color:#0f172a; margin-bottom:10px;"><i class="fa-solid fa-magnifying-glass" style="color:#2563eb; margin-right:6px;"></i> SEO Search Listing Preview</h4>
+          <div style="background:#ffffff; border:1px solid #cbd5e1; border-radius:6px; padding:10px 14px; margin-bottom:10px;">
+            <div id="serpUrl" style="font-size:0.72rem; color:#202124;">hiquality.com › blog › <span id="serpSlug">post-slug</span></div>
+            <div id="serpTitle" style="font-size:0.95rem; color:#1a0dab; font-weight:600; text-decoration:underline; margin:2px 0;">Title Preview</div>
+            <div id="serpDesc" style="font-size:0.78rem; color:#4d5156; line-height:1.4;">Description preview...</div>
           </div>
-
-          <!-- Google SERP Live Preview Box -->
-          <div style="background:#ffffff; border:1px solid #cbd5e1; border-radius:8px; padding:12px 16px; margin-bottom:14px;">
-            <div id="serpUrl" style="font-size:0.75rem; color:#202124;">hiquality.com › blog › <span id="serpSlug">post-title-slug</span></div>
-            <div id="serpTitle" style="font-size:1.05rem; color:#1a0dab; font-weight:600; text-decoration:underline; margin:2px 0;">Blog Title Preview...</div>
-            <div id="serpDesc" style="font-size:0.82rem; color:#4d5156; line-height:1.4;">Add meta description to see how your article will look on Google search results...</div>
+          <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:10px;">
+            <input type="text" id="blogSeoTitle" class="form-input" placeholder="SEO Title..." oninput="updateSeoPreview()" />
+            <input type="text" id="blogKeywords" class="form-input" placeholder="Keywords (comma separated)..." />
           </div>
-
-          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:14px;">
-            <div class="form-group" style="margin:0;">
-              <label class="form-label">Meta Title (SEO Title)</label>
-              <input type="text" id="blogSeoTitle" class="form-input" placeholder="Google Search Title..." oninput="updateSeoPreview()" />
-            </div>
-            <div class="form-group" style="margin:0;">
-              <label class="form-label">SEO Keywords (comma separated)</label>
-              <input type="text" id="blogKeywords" class="form-input" placeholder="DPF cleaning, silencer manufacturing..." />
-            </div>
-          </div>
-          <div class="form-group" style="margin-top:10px; margin-bottom:0;">
-            <label class="form-label">Meta Description (SEO Description)</label>
-            <textarea id="blogSeoDesc" class="form-textarea" rows="2" placeholder="Search engine description previewed on Google search results..." oninput="updateSeoPreview()"></textarea>
-          </div>
+          <textarea id="blogSeoDesc" class="form-textarea" rows="2" style="margin-top:8px;" placeholder="SEO Description..." oninput="updateSeoPreview()"></textarea>
         </div>
 
-        <!-- DYNAMIC ARTICLE FAQs SECTION -->
-        <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:16px; margin-bottom:18px;">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-            <h4 style="font-size:0.95rem; font-weight:800; color:#0f172a;"><i class="fa-solid fa-circle-question" style="color:#dc2626; margin-right:6px;"></i> Article FAQs (Shown on Blog Inner Page)</h4>
-            <button type="button" class="btn btn-outline btn-sm" onclick="addFaqRow()"><i class="fa-solid fa-plus"></i> Add Question</button>
-          </div>
-          <div id="faqContainer" style="display:flex; flex-direction:column; gap:10px;"></div>
-        </div>
-
-        <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:24px;">
+        <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
           <button type="button" class="btn btn-outline" onclick="closeModal('blogModal')">Cancel</button>
-          <button type="submit" class="btn btn-primary" style="width:auto;"><i class="fa-solid fa-paper-plane"></i> Save Blog Post</button>
+          <button type="submit" class="btn btn-primary"><i class="fa-solid fa-paper-plane"></i> Save Blog Post</button>
         </div>
       </form>
     </div>
   </div>
 
   <script>
-    // API_BASE detection for cPanel Phusion Passenger deployments
-    // On cPanel: tweaki.pw/hiquality/admin → Passenger only routes /hiquality/admin/* to Node
-    //   So API calls MUST go through /hiquality/admin/api/* (not /hiquality/api/*)
-    // On localhost: admin at /admin → API at /api directly
     const rawPath = window.location.pathname;
     const adminIdx = rawPath.indexOf('/admin');
     let API_BASE;
     if (adminIdx > 0) {
-      // cPanel: prefix before /admin exists (e.g. /hiquality/admin)
-      // Include /admin in the API path so Passenger routes it to Node
       API_BASE = rawPath.substring(0, adminIdx) + '/admin/api';
     } else {
-      // Local or root deployment: /admin → API at /api
       API_BASE = '/api';
     }
     console.log('[Admin] pathname:', rawPath, '| API_BASE:', API_BASE);
+
     let servicesData = [];
     let productsData = [];
     let blogsData = [];
+
+    // Mobile Sidebar Toggle
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('open');
+    }
 
     // Auth Check
     if (localStorage.getItem('adminToken')) {
@@ -839,19 +744,23 @@
 
     function switchTab(tabName) {
       document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-      const tabs = ['Dashboard', 'Services', 'Products', 'Blogs', 'Leads'];
+      const tabs = ['Dashboard', 'Services', 'Products', 'Blogs'];
       tabs.forEach(t => {
         const el = document.getElementById(`tab${t}`);
         if (el) el.style.display = (t.toLowerCase() === tabName ? 'block' : 'none');
       });
       document.getElementById('pageTitle').innerText = tabName.toUpperCase() + ' MANAGEMENT';
+      
+      // Close sidebar on mobile
+      if (window.innerWidth <= 900) {
+        document.getElementById('sidebar').classList.remove('open');
+      }
     }
 
     async function loadAllData() {
       fetchServices();
       fetchProducts();
       fetchBlogs();
-      fetchLeads();
     }
 
     async function fetchServices() {
@@ -868,7 +777,9 @@
 
     function renderServicesTable() {
       const tbody = document.querySelector('#servicesTable tbody');
-      tbody.innerHTML = servicesData.map(s => `
+      tbody.innerHTML = servicesData.map(s => {
+        const sid = s.id || s._id;
+        return `
         <tr>
           <td><i class="fa-solid fa-gear" style="color:#dc2626;"></i> ${s.icon || 'FaWrench'}</td>
           <td><strong>${s.title}</strong></td>
@@ -876,11 +787,13 @@
           <td>${s.order || 1}</td>
           <td><span class="badge ${s.visible !== false ? 'badge-success' : 'badge-warning'}">${s.visible !== false ? 'Active' : 'Hidden'}</span></td>
           <td>
-            <button class="btn btn-outline btn-sm" onclick="editService('${s.id}')"><i class="fa-solid fa-pen"></i></button>
-            <button class="btn btn-danger btn-sm" onclick="deleteService('${s.id}')"><i class="fa-solid fa-trash"></i></button>
+            <div style="display:flex; gap:6px;">
+              <button class="btn btn-outline btn-sm" onclick="editService('${sid}')"><i class="fa-solid fa-pen"></i></button>
+              <button class="btn btn-danger btn-sm" onclick="deleteService('${sid}')"><i class="fa-solid fa-trash"></i></button>
+            </div>
           </td>
         </tr>
-      `).join('');
+      `}).join('') || '<tr><td colspan="6">No services found.</td></tr>';
     }
 
     async function fetchProducts() {
@@ -897,17 +810,29 @@
 
     function renderProductsTable() {
       const tbody = document.querySelector('#productsTable tbody');
-      tbody.innerHTML = productsData.map(p => `
+      tbody.innerHTML = productsData.map(p => {
+        const pid = p.id || String(p._id);
+        return `
         <tr>
-          <td><strong>${p.title}</strong></td>
-          <td>${p.category || 'Silencer'}</td>
+          <td>
+            <div style="display:flex; align-items:center; gap:10px;">
+              <img src="${p.image || '/images/prod_passenger_car.png'}" style="width:38px; height:38px; border-radius:6px; object-fit:contain; border:1px solid #e2e8f0; background:#fff; padding:2px;" />
+              <div>
+                <strong style="color:#0f172a;">${p.title}</strong>
+                <div style="font-size:0.7rem; color:#64748b;">ID: ${pid}</div>
+              </div>
+            </div>
+          </td>
+          <td><span class="badge badge-success">${p.category || 'Silencer'}</span></td>
           <td>${p.spec || '-'}</td>
           <td>
-            <button class="btn btn-outline btn-sm" onclick="editProduct('${p.id}')"><i class="fa-solid fa-pen"></i></button>
-            <button class="btn btn-danger btn-sm" onclick="deleteProduct('${p.id}')"><i class="fa-solid fa-trash"></i></button>
+            <div style="display:flex; gap:6px;">
+              <button class="btn btn-outline btn-sm" onclick="editProduct('${pid}')"><i class="fa-solid fa-pen"></i> Edit</button>
+              <button class="btn btn-danger btn-sm" onclick="deleteProduct('${pid}')"><i class="fa-solid fa-trash"></i> Delete</button>
+            </div>
           </td>
         </tr>
-      `).join('');
+      `}).join('') || '<tr><td colspan="4">No products found.</td></tr>';
     }
 
     async function fetchBlogs() {
@@ -924,14 +849,16 @@
 
     function renderBlogsTable() {
       const tbody = document.querySelector('#blogsTable tbody');
-      tbody.innerHTML = blogsData.map(b => `
+      tbody.innerHTML = blogsData.map(b => {
+        const bid = b.id || String(b._id);
+        return `
         <tr>
           <td>
-            <div style="display:flex; align-items:center; gap:12px;">
-              <img src="${b.featuredImage || '/images/bg.webp'}" style="width:44px; height:44px; border-radius:6px; object-fit:cover; border:1px solid #e2e8f0;" />
+            <div style="display:flex; align-items:center; gap:10px;">
+              <img src="${b.featuredImage || '/images/bg.webp'}" style="width:38px; height:38px; border-radius:6px; object-fit:cover; border:1px solid #e2e8f0;" />
               <div>
                 <strong style="color:#0f172a;">${b.title}</strong>
-                <div style="font-size:0.75rem; color:#64748b; margin-top:2px;">/blog/${b.slug || b.id}</div>
+                <div style="font-size:0.72rem; color:#64748b;">/blog/${b.slug || bid}</div>
               </div>
             </div>
           </td>
@@ -939,52 +866,16 @@
           <td>${new Date(b.publishDate || Date.now()).toLocaleDateString()}</td>
           <td><span class="badge ${b.visibility === 'visible' ? 'badge-success' : 'badge-warning'}">${b.visibility}</span></td>
           <td>
-            <div style="display:flex; gap:8px;">
-              <button class="btn btn-outline btn-sm" onclick="editBlog('${b.id || b._id}')" title="Edit Blog"><i class="fa-solid fa-pen-to-square"></i> Edit</button>
-              <button class="btn btn-danger btn-sm" onclick="deleteBlog('${b.id || b._id}')" title="Delete Blog"><i class="fa-solid fa-trash"></i></button>
+            <div style="display:flex; gap:6px;">
+              <button class="btn btn-outline btn-sm" onclick="editBlog('${bid}')"><i class="fa-solid fa-pen"></i> Edit</button>
+              <button class="btn btn-danger btn-sm" onclick="deleteBlog('${bid}')"><i class="fa-solid fa-trash"></i> Delete</button>
             </div>
           </td>
         </tr>
-      `).join('') || '<tr><td colspan="5">No blog posts found. Click "+ Create Blog Post" to add your first article!</td></tr>';
+      `}).join('') || '<tr><td colspan="5">No blog posts found.</td></tr>';
     }
 
-    async function fetchLeads() {
-      try {
-        const resEnq = await fetch(`${API_BASE}/enquiries`);
-        const dataEnq = await resEnq.json();
-        const resBook = await fetch(`${API_BASE}/bookings`);
-        const dataBook = await resBook.json();
-        
-        const total = (dataEnq.enquiries?.length || 0) + (dataBook.bookings?.length || 0);
-        document.getElementById('statLeads').innerText = total;
-
-        const tbodyEnq = document.querySelector('#enquiriesTable tbody');
-        tbodyEnq.innerHTML = (dataEnq.enquiries || []).map(e => `
-          <tr>
-            <td><strong>${e.name || 'Customer'}</strong></td>
-            <td><a href="tel:${e.phone}">${e.phone}</a></td>
-            <td>${e.product || 'General'}</td>
-            <td>${e.message || '-'}</td>
-            <td>${new Date(e.createdAt || Date.now()).toLocaleDateString()}</td>
-            <td><button class="btn btn-danger btn-sm" onclick="deleteEnquiry('${e.id}')"><i class="fa-solid fa-trash"></i></button></td>
-          </tr>
-        `).join('') || '<tr><td colspan="6">No enquiries received yet.</td></tr>';
-
-        const tbodyBook = document.querySelector('#recentBookingsTable tbody');
-        tbodyBook.innerHTML = (dataBook.bookings || []).map(b => `
-          <tr>
-            <td><strong>${b.customerName || 'Valued Customer'}</strong></td>
-            <td><a href="tel:${b.phone}">${b.phone}</a></td>
-            <td>${b.vehicleModel}</td>
-            <td>${b.preferredDate}</td>
-            <td><span class="badge badge-warning">${b.status || 'PENDING'}</span></td>
-          </tr>
-        `).join('') || '<tr><td colspan="5">No service bookings yet.</td></tr>';
-
-      } catch (err) { console.error(err); }
-    }
-
-    // Modal Handlers
+    // Modal Handlers for Services
     function openServiceModal(id = null) {
       document.getElementById('serviceForm').reset();
       document.getElementById('svcId').value = '';
@@ -993,11 +884,11 @@
     }
 
     function editService(id) {
-      const s = servicesData.find(item => item.id === id);
+      const s = servicesData.find(item => item.id === id || String(item._id) === id);
       if (!s) return;
-      document.getElementById('svcId').value = s.id;
-      document.getElementById('svcTitle').value = s.title;
-      document.getElementById('svcDesc').value = s.desc;
+      document.getElementById('svcId').value = s.id || s._id;
+      document.getElementById('svcTitle').value = s.title || '';
+      document.getElementById('svcDesc').value = s.desc || '';
       document.getElementById('svcIcon').value = s.icon || 'FaWrench';
       document.getElementById('svcOrder').value = s.order || 1;
       document.getElementById('serviceModalTitle').innerText = 'Edit Service';
@@ -1038,6 +929,7 @@
       } catch (err) { alert('Failed to delete service'); }
     }
 
+    // Modal Handlers for Products
     function openProductModal() {
       document.getElementById('productForm').reset();
       document.getElementById('prodId').value = '';
@@ -1049,8 +941,11 @@
     }
 
     function editProduct(id) {
-      const p = productsData.find(item => item.id === id || item._id === id);
-      if (!p) return;
+      const p = productsData.find(item => item.id === id || String(item._id) === id);
+      if (!p) {
+        alert('Product not found');
+        return;
+      }
 
       document.getElementById('prodId').value = p.id || p._id;
       document.getElementById('prodTitle').value = p.title || '';
@@ -1061,9 +956,13 @@
       document.getElementById('prodFullDesc').value = p.fullDesc || p.desc || '';
 
       const preview = document.getElementById('prodImagePreview');
-      if (preview && p.image) {
-        preview.querySelector('img').src = p.image;
-        preview.style.display = 'block';
+      if (preview) {
+        if (p.image) {
+          preview.querySelector('img').src = p.image;
+          preview.style.display = 'block';
+        } else {
+          preview.style.display = 'none';
+        }
       }
 
       document.getElementById('productModalTitle').innerHTML = '<i class="fa-solid fa-pen-to-square" style="color:#2563eb; margin-right:8px;"></i> Edit Product';
@@ -1107,131 +1006,20 @@
     });
 
     async function deleteProduct(id) {
-      if (!confirm('Delete product?')) return;
+      if (!confirm('Are you sure you want to delete this product?')) return;
       try {
         const res = await fetch(`${API_BASE}/products/${id}`, { method: 'DELETE' });
-        if ((await res.json()).success) fetchProducts();
+        const data = await res.json();
+        if (data.success) {
+          fetchProducts();
+          alert('Product deleted successfully!');
+        } else {
+          alert(data.error || 'Failed to delete product');
+        }
       } catch (err) { alert('Failed to delete product'); }
     }
 
-    // ==========================================
-    // SHOPIFY-STYLE BLOG RICH EDITOR JS ENGINE
-    // ==========================================
-    let currentRefImages = [];
-    let currentFaqs = [];
-
-    // Rich Text Editor Commands ("style chngng options")
-    function execCmd(command, value = null) {
-      document.execCommand(command, false, value);
-      syncEditorContent();
-    }
-
-    function syncEditorContent() {
-      const editorHtml = document.getElementById('blogEditor').innerHTML;
-      document.getElementById('blogContent').value = editorHtml;
-    }
-
-    function insertLinkPrompt() {
-      const url = prompt('Enter link URL (e.g. https://hiquality.com/services):');
-      if (url) execCmd('createLink', url);
-    }
-
-    function insertImagePrompt() {
-      const url = prompt('Enter image URL (or upload image using Cloudinary button below):');
-      if (url) execCmd('insertImage', url);
-    }
-
-    function updateSeoPreview() {
-      const title = document.getElementById('blogTitle').value || 'Blog Title Preview';
-      const seoTitle = document.getElementById('blogSeoTitle').value || title;
-      const excerpt = document.getElementById('blogExcerpt').value || '';
-      const seoDesc = document.getElementById('blogSeoDesc').value || excerpt || 'Add meta description to see how your article will look on Google search results...';
-      const slug = title.toLowerCase().trim().replace(/[\s\W-]+/g, '-');
-
-      document.getElementById('serpTitle').innerText = seoTitle;
-      document.getElementById('serpDesc').innerText = seoDesc;
-      document.getElementById('serpSlug').innerText = slug || 'post-title-slug';
-    }
-
-    // Reference Images Management
-    function renderRefImages() {
-      const container = document.getElementById('refImagesList');
-      container.innerHTML = currentRefImages.map((img, index) => `
-        <div style="position:relative; width:70px; height:70px; border-radius:6px; overflow:hidden; border:1px solid #cbd5e1;">
-          <img src="${img}" style="width:100%; height:100%; object-fit:cover;" />
-          <button type="button" onclick="removeRefImage(${index})" style="position:absolute; top:2px; right:2px; background:rgba(220,38,38,0.85); color:#fff; border:none; border-radius:50%; width:18px; height:18px; font-size:10px; cursor:pointer; display:flex; align-items:center; justify-content:center;">&times;</button>
-        </div>
-      `).join('');
-    }
-
-    function addRefImageUrl() {
-      const input = document.getElementById('newRefImgUrl');
-      const url = input.value.trim();
-      if (url) {
-        currentRefImages.push(url);
-        input.value = '';
-        renderRefImages();
-      }
-    }
-
-    async function uploadRefImageFile(fileInput) {
-      const file = fileInput.files[0];
-      if (!file) return;
-      const formData = new FormData();
-      formData.append('file', file);
-      try {
-        const res = await fetch(`${API_BASE}/upload`, { method: 'POST', body: formData });
-        const data = await res.json();
-        if (data.success) {
-          currentRefImages.push(data.url);
-          renderRefImages();
-          alert('Reference image uploaded!');
-        } else alert(data.error || 'Upload failed');
-      } catch (err) { alert('Image upload failed'); }
-    }
-
-    function removeRefImage(index) {
-      currentRefImages.splice(index, 1);
-      renderRefImages();
-    }
-
-    // Dynamic Article FAQs Management
-    function renderFaqs() {
-      const container = document.getElementById('faqContainer');
-      if (currentFaqs.length === 0) {
-        container.innerHTML = '<div style="font-size:0.8rem; color:#64748b; font-style:italic;">No FAQs added yet. Click "+ Add Question" to add questions &amp; answers to this article.</div>';
-        return;
-      }
-      container.innerHTML = currentFaqs.map((faq, index) => `
-        <div style="background:#ffffff; border:1px solid #cbd5e1; border-radius:8px; padding:12px; position:relative;">
-          <button type="button" onclick="removeFaqRow(${index})" style="position:absolute; top:10px; right:10px; background:#fef2f2; color:#ef4444; border:1px solid #fecaca; border-radius:6px; padding:4px 8px; font-size:0.75rem; cursor:pointer; font-weight:700;"><i class="fa-solid fa-trash"></i> Remove</button>
-          <div class="form-group" style="margin-bottom:8px; padding-right:80px;">
-            <label class="form-label" style="font-size:0.75rem;">Question ${index + 1}</label>
-            <input type="text" class="form-input" value="${escapeHtml(faq.question)}" oninput="currentFaqs[${index}].question = this.value" placeholder="e.g. How often should a DPF be cleaned?" />
-          </div>
-          <div class="form-group" style="margin:0;">
-            <label class="form-label" style="font-size:0.75rem;">Answer</label>
-            <textarea class="form-textarea" rows="2" oninput="currentFaqs[${index}].answer = this.value" placeholder="Detailed answer...">${escapeHtml(faq.answer)}</textarea>
-          </div>
-        </div>
-      `).join('');
-    }
-
-    function escapeHtml(str) {
-      return (str || '').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    }
-
-    function addFaqRow() {
-      currentFaqs.push({ question: '', answer: '' });
-      renderFaqs();
-    }
-
-    function removeFaqRow(index) {
-      currentFaqs.splice(index, 1);
-      renderFaqs();
-    }
-
-    // Modal Open & Edit Handlers
+    // Modal Handlers for Blogs
     function openBlogModal() {
       document.getElementById('blogForm').reset();
       document.getElementById('blogId').value = '';
@@ -1239,17 +1027,13 @@
       document.getElementById('blogContent').value = '';
       document.getElementById('blogFeaturedImage').value = '';
       document.getElementById('blogMainImgPreview').src = '/images/bg.webp';
-      currentRefImages = [];
-      currentFaqs = [];
-      renderRefImages();
-      renderFaqs();
       updateSeoPreview();
       document.getElementById('blogModalTitle').innerHTML = '<i class="fa-solid fa-newspaper" style="color:#dc2626; margin-right:8px;"></i> Add Blog Post';
       document.getElementById('blogModal').classList.add('show');
     }
 
     function editBlog(id) {
-      const b = blogsData.find(item => item.id === id || item._id === id);
+      const b = blogsData.find(item => item.id === id || String(item._id) === id);
       if (!b) return;
 
       document.getElementById('blogId').value = b.id || b._id;
@@ -1268,15 +1052,41 @@
       document.getElementById('blogEditor').innerHTML = content;
       document.getElementById('blogContent').value = content;
 
-      currentRefImages = Array.isArray(b.referenceImages) ? [...b.referenceImages] : [];
-      currentFaqs = Array.isArray(b.faqs) ? JSON.parse(JSON.stringify(b.faqs)) : [];
-
-      renderRefImages();
-      renderFaqs();
       updateSeoPreview();
-
       document.getElementById('blogModalTitle').innerHTML = '<i class="fa-solid fa-pen-to-square" style="color:#2563eb; margin-right:8px;"></i> Edit Blog Post';
       document.getElementById('blogModal').classList.add('show');
+    }
+
+    function execCmd(command, value = null) {
+      document.execCommand(command, false, value);
+      syncEditorContent();
+    }
+
+    function syncEditorContent() {
+      const editorHtml = document.getElementById('blogEditor').innerHTML;
+      document.getElementById('blogContent').value = editorHtml;
+    }
+
+    function insertLinkPrompt() {
+      const url = prompt('Enter link URL:');
+      if (url) execCmd('createLink', url);
+    }
+
+    function insertImagePrompt() {
+      const url = prompt('Enter image URL:');
+      if (url) execCmd('insertImage', url);
+    }
+
+    function updateSeoPreview() {
+      const title = document.getElementById('blogTitle').value || 'Blog Title Preview';
+      const seoTitle = document.getElementById('blogSeoTitle').value || title;
+      const excerpt = document.getElementById('blogExcerpt').value || '';
+      const seoDesc = document.getElementById('blogSeoDesc').value || excerpt || 'Add description...';
+      const slug = title.toLowerCase().trim().replace(/[\s\W-]+/g, '-');
+
+      document.getElementById('serpTitle').innerText = seoTitle;
+      document.getElementById('serpDesc').innerText = seoDesc;
+      document.getElementById('serpSlug').innerText = slug || 'post-slug';
     }
 
     document.getElementById('blogForm').addEventListener('submit', async (e) => {
@@ -1307,11 +1117,9 @@
         excerpt,
         content,
         featuredImage,
-        referenceImages: currentRefImages,
         seoTitle,
         seoDescription,
-        keywords,
-        faqs: currentFaqs.filter(f => f.question && f.question.trim())
+        keywords
       };
 
       const url = id ? `${API_BASE}/blogs/${id}` : `${API_BASE}/blogs`;
@@ -1342,14 +1150,6 @@
       } catch (err) { alert('Failed to delete blog'); }
     }
 
-    async function deleteEnquiry(id) {
-      if (!confirm('Delete enquiry?')) return;
-      try {
-        const res = await fetch(`${API_BASE}/enquiries/${id}`, { method: 'DELETE' });
-        if ((await res.json()).success) fetchLeads();
-      } catch (err) { alert('Failed to delete enquiry'); }
-    }
-
     async function uploadImage(fileInput, targetInputId, previewContainerId) {
       const file = fileInput.files[0];
       if (!file) return;
@@ -1370,7 +1170,7 @@
             preview.querySelector('img').src = data.url;
             preview.style.display = 'block';
           }
-          alert('Image uploaded to Cloudinary successfully!');
+          alert('Image uploaded successfully!');
         } else alert(data.error || 'Upload failed');
       } catch (err) { alert('Image upload failed'); }
     }
