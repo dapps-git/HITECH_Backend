@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hi-Quality Silencers — Admin Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #dc2626;
+      --primary-dark: #b91c1c;
+      --primary-light: #fef2f2;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+
+    body { background: var(--bg); color: var(--text); min-height: 100vh; }
+
+    /* Login Overlay */
+    #loginScreen {
+      position: fixed; inset: 0; background: #0f172a; display: flex;
+      align-items: center; justify-content: center; z-index: 9999; padding: 20px;
+    }
+    .login-box {
+      background: #ffffff; width: 100%; max-width: 420px; padding: 40px;
+      border-radius: 16px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); text-align: center;
+    }
+    .login-title { font-size: 1.5rem; font-weight: 800; color: #1e293b; margin-bottom: 8px; }
+    .login-sub { font-size: 0.85rem; color: #64748b; margin-bottom: 24px; }
+    .form-group { margin-bottom: 18px; text-align: left; }
+    .form-label { display: block; font-size: 0.8rem; font-weight: 700; color: #334155; margin-bottom: 6px; }
+    .form-input, .form-textarea, .form-select {
+      width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px;
+      font-size: 0.9rem; outline: none; transition: all 0.2s; background: #ffffff;
+    }
+    .form-input:focus, .form-textarea:focus, .form-select:focus {
+      border-color: var(--primary); box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15);
+    }
+    .btn {
+      padding: 10px 18px; border-radius: 8px; font-weight: 700; font-size: 0.88rem;
+      cursor: pointer; border: none; transition: all 0.2s; display: inline-flex;
+      align-items: center; justify-content: center; gap: 8px;
+    }
+    .btn-primary { background: var(--primary); color: #ffffff; width: 100%; }
+    .btn-primary:hover { background: var(--primary-dark); }
+    .btn-outline { background: transparent; border: 1px solid var(--border); color: #334155; }
+    .btn-outline:hover { background: #f1f5f9; }
+    .btn-danger { background: #ef4444; color: #ffffff; }
+    .btn-danger:hover { background: #dc2626; }
+    .btn-sm { padding: 6px 12px; font-size: 0.78rem; }
+
+    /* Admin Dashboard Layout */
+    .admin-layout { display: flex; min-height: 100vh; }
+    .sidebar {
+      width: 260px; background: #0f172a; color: #ffffff; padding: 24px 16px;
+      display: flex; flex-direction: column; gap: 24px; position: fixed; height: 100vh; left: 0; top: 0;
+    }
+    .brand { display: flex; align-items: center; gap: 12px; font-weight: 800; font-size: 1.1rem; color: #ffffff; }
+    .brand-icon { width: 36px; height: 36px; background: var(--primary); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #ffffff; }
+    .nav-menu { display: flex; flex-direction: column; gap: 6px; flex: 1; }
+    .nav-item {
+      display: flex; align-items: center; gap: 12px; padding: 12px 14px;
+      border-radius: 10px; color: #94a3b8; font-weight: 600; font-size: 0.9rem;
+      cursor: pointer; text-decoration: none; transition: all 0.2s;
+    }
+    .nav-item:hover, .nav-item.active { background: rgba(255,255,255,0.08); color: #ffffff; }
+    .nav-item.active { background: var(--primary); color: #ffffff; }
+
+    .main-content { margin-left: 260px; flex: 1; padding: 32px; max-width: 1400px; }
+    .header-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; }
+    .page-title { font-size: 1.5rem; font-weight: 800; color: #0f172a; }
+    .page-sub { font-size: 0.85rem; color: #64748b; margin-top: 4px; }
+
+    /* Cards & Stats */
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 32px; }
+    .stat-card {
+      background: var(--card-bg); padding: 20px; border-radius: 12px;
+      border: 1px solid var(--border); display: flex; align-items: center; gap: 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .stat-icon {
+      width: 48px; height: 48px; border-radius: 12px; background: var(--primary-light);
+      color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.2rem;
+    }
+    .stat-val { font-size: 1.5rem; font-weight: 800; color: #0f172a; }
+    .stat-lbl { font-size: 0.8rem; color: #64748b; font-weight: 600; }
+
+    /* Data Tables */
+    .card-panel {
+      background: var(--card-bg); border-radius: 14px; border: 1px solid var(--border);
+      overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 32px;
+    }
+    .panel-header {
+      padding: 18px 24px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .panel-title { font-size: 1.05rem; font-weight: 700; }
+    table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.88rem; }
+    th { background: #f8fafc; padding: 12px 20px; font-weight: 700; color: #475569; border-bottom: 1px solid var(--border); }
+    td { padding: 14px 20px; border-bottom: 1px solid var(--border); color: #334155; vertical-align: middle; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #f8fafc; }
+
+    .badge { padding: 4px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; }
+    .badge-success { background: #dcfce7; color: #166534; }
+    .badge-warning { background: #fef3c7; color: #92400e; }
+
+    /* Modal */
+    .modal-backdrop {
+      position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px);
+      display: none; align-items: center; justify-content: center; z-index: 10000; padding: 20px;
+    }
+    .modal-backdrop.show { display: flex; }
+    .modal {
+      background: #ffffff; border-radius: 16px; width: 100%; max-width: 540px;
+      max-height: 90vh; overflow-y: auto; padding: 28px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+    }
+    .modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+    .modal-title { font-size: 1.2rem; font-weight: 800; }
+    .close-btn { background: none; border: none; font-size: 1.2rem; cursor: pointer; color: #64748b; }
+
+    @media (max-width: 900px) {
+      .sidebar { width: 70px; padding: 16px 8px; }
+      .brand-text, .nav-text { display: none; }
+      .main-content { margin-left: 70px; padding: 16px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- LOGIN OVERLAY -->
+  <div id="loginScreen">
+    <div class="login-box">
+      <div style="width:50px; height:50px; background:#dc2626; border-radius:12px; margin:0 auto 16px; display:flex; align-items:center; justify-content:center; color:#fff; font-size:1.5rem;">
+        <i class="fa-solid fa-gears"></i>
+      </div>
+      <h1 class="login-title">Admin Portal</h1>
+      <p class="login-sub">Hi-Quality Silencers Control Center</p>
+
+      <form id="loginForm">
+        <div class="form-group">
+          <label class="form-label">Admin Email</label>
+          <input type="text" id="loginEmail" class="form-input" placeholder="admin@hiquality.com" value="admin@hiquality.com" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input type="password" id="loginPassword" class="form-input" placeholder="••••••••" value="admin123" required />
+        </div>
+        <button type="submit" class="btn btn-primary" style="margin-top:10px;">
+          <i class="fa-solid fa-right-to-bracket"></i> Sign In to Dashboard
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ADMIN MAIN LAYOUT -->
+  <div class="admin-layout">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-icon"><i class="fa-solid fa-shield-halved"></i></div>
+        <span class="brand-text">Hi-Quality</span>
+      </div>
+
+      <nav class="nav-menu">
+        <div class="nav-item active" onclick="switchTab('dashboard')">
+          <i class="fa-solid fa-chart-pie"></i><span class="nav-text">Dashboard</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('services')">
+          <i class="fa-solid fa-list-check"></i><span class="nav-text">Services (Dynamic)</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('products')">
+          <i class="fa-solid fa-box-archive"></i><span class="nav-text">Products</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('blogs')">
+          <i class="fa-solid fa-newspaper"></i><span class="nav-text">Blog Posts</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('leads')">
+          <i class="fa-solid fa-envelope-open-text"></i><span class="nav-text">Enquiries & Bookings</span>
+        </div>
+      </nav>
+
+      <div class="nav-item" onclick="logout()" style="color:#ef4444; margin-top:auto;">
+        <i class="fa-solid fa-power-off"></i><span class="nav-text">Sign Out</span>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="main-content">
+      
+      <!-- TOP HEADER BAR -->
+      <div class="header-bar">
+        <div>
+          <h1 class="page-title" id="pageTitle">Dashboard Overview</h1>
+          <p class="page-sub" id="pageSub">Real-time control panel for Hi-Quality Silencers website & services</p>
+        </div>
+        <div>
+          <a href="/" target="_blank" class="btn btn-outline" style="text-decoration:none;">
+            <i class="fa-solid fa-globe"></i> View Website
+          </a>
+        </div>
+      </div>
+
+      <!-- STATS OVERVIEW -->
+      <div class="stats-grid" id="statsGrid">
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fa-solid fa-wrench"></i></div>
+          <div>
+            <div class="stat-val" id="statServices">0</div>
+            <div class="stat-lbl">Active Services</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fa-solid fa-boxes-stacked"></i></div>
+          <div>
+            <div class="stat-val" id="statProducts">0</div>
+            <div class="stat-lbl">Product Models</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fa-solid fa-newspaper"></i></div>
+          <div>
+            <div class="stat-val" id="statBlogs">0</div>
+            <div class="stat-lbl">Blog Articles</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fa-solid fa-paper-plane"></i></div>
+          <div>
+            <div class="stat-val" id="statLeads">0</div>
+            <div class="stat-lbl">Customer Leads</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 1: DASHBOARD TAB -->
+      <div id="tabDashboard">
+        <div class="card-panel">
+          <div class="panel-header">
+            <h2 class="panel-title"><i class="fa-solid fa-bolt" style="color:#dc2626;"></i> Quick Actions</h2>
+          </div>
+          <div style="padding:24px; display:flex; gap:16px; flex-wrap:wrap;">
+            <button class="btn btn-primary" onclick="openServiceModal()"><i class="fa-solid fa-plus"></i> Add New Service</button>
+            <button class="btn btn-outline" onclick="openProductModal()"><i class="fa-solid fa-plus"></i> Add New Product</button>
+            <button class="btn btn-outline" onclick="switchTab('blogs')"><i class="fa-solid fa-pen"></i> Write Blog Post</button>
+          </div>
+        </div>
+
+        <div class="card-panel">
+          <div class="panel-header">
+            <h2 class="panel-title">Recent Customer Bookings</h2>
+          </div>
+          <table id="recentBookingsTable">
+            <thead>
+              <tr>
+                <th>Customer Name</th>
+                <th>Phone</th>
+                <th>Vehicle Model</th>
+                <th>Preferred Date</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody><tr><td colspan="5" style="text-align:center;">Loading bookings...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TAB 2: DYNAMIC SERVICES TAB -->
+      <div id="tabServices" style="display:none;">
+        <div class="card-panel">
+          <div class="panel-header">
+            <h2 class="panel-title"><i class="fa-solid fa-list-check"></i> Manage Website Services</h2>
+            <button class="btn btn-primary btn-sm" onclick="openServiceModal()">
+              <i class="fa-solid fa-plus"></i> Add Service
+            </button>
+          </div>
+          <table id="servicesTable">
+            <thead>
+              <tr>
+                <th>Icon</th>
+                <th>Service Title</th>
+                <th>Description</th>
+                <th>Order</th>
+                <th>Visibility</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TAB 3: PRODUCTS TAB -->
+      <div id="tabProducts" style="display:none;">
+        <div class="card-panel">
+          <div class="panel-header">
+            <h2 class="panel-title"><i class="fa-solid fa-box-archive"></i> Product Catalog</h2>
+            <button class="btn btn-primary btn-sm" onclick="openProductModal()">
+              <i class="fa-solid fa-plus"></i> Add Product
+            </button>
+          </div>
+          <table id="productsTable">
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Category</th>
+                <th>Specification</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TAB 4: BLOGS TAB -->
+      <div id="tabBlogs" style="display:none;">
+        <div class="card-panel">
+          <div class="panel-header">
+            <h2 class="panel-title"><i class="fa-solid fa-newspaper"></i> Blog Posts</h2>
+            <button class="btn btn-primary btn-sm" onclick="openBlogModal()">
+              <i class="fa-solid fa-plus"></i> Create Blog Post
+            </button>
+          </div>
+          <table id="blogsTable">
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Category</th>
+                <th>Publish Date</th>
+                <th>Visibility</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TAB 5: ENQUIRIES & LEADS TAB -->
+      <div id="tabLeads" style="display:none;">
+        <div class="card-panel">
+          <div class="panel-header">
+            <h2 class="panel-title"><i class="fa-solid fa-envelope"></i> Contact Enquiries</h2>
+          </div>
+          <table id="enquiriesTable">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Phone</th>
+                <th>Product/Interest</th>
+                <th>Message</th>
+                <th>Date</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- SERVICE MODAL -->
+  <div class="modal-backdrop" id="serviceModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title" id="serviceModalTitle">Add Dynamic Service</h3>
+        <button class="close-btn" onclick="closeModal('serviceModal')">&times;</button>
+      </div>
+      <form id="serviceForm">
+        <input type="hidden" id="svcId" />
+        <div class="form-group">
+          <label class="form-label">Service Title *</label>
+          <input type="text" id="svcTitle" class="form-input" placeholder="e.g. Professional DPF Restoration" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Description *</label>
+          <textarea id="svcDesc" class="form-textarea" rows="3" placeholder="Short description of the service..." required></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Icon</label>
+          <select id="svcIcon" class="form-select">
+            <option value="FaFilter">🔍 FaFilter (DPF Cleaning)</option>
+            <option value="FaIndustry">🏭 FaIndustry (Manufacturing)</option>
+            <option value="FaLeaf">🍃 FaLeaf (Catalytic Converter)</option>
+            <option value="FaLink">🔗 FaLink (Flex Pipe)</option>
+            <option value="FaWrench">🔧 FaWrench (Exhaust Repair)</option>
+            <option value="FaCar">🚗 FaCar (Auto Service)</option>
+            <option value="FaCogs">⚙️ FaCogs (Engineering)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Display Order</label>
+          <input type="number" id="svcOrder" class="form-input" value="1" min="1" />
+        </div>
+        <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:24px;">
+          <button type="button" class="btn btn-outline" onclick="closeModal('serviceModal')">Cancel</button>
+          <button type="submit" class="btn btn-primary" style="width:auto;">Save Service</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- PRODUCT MODAL -->
+  <div class="modal-backdrop" id="productModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title" id="productModalTitle">Add Product</h3>
+        <button class="close-btn" onclick="closeModal('productModal')">&times;</button>
+      </div>
+      <form id="productForm">
+        <input type="hidden" id="prodId" />
+        <div class="form-group">
+          <label class="form-label">Product Name *</label>
+          <input type="text" id="prodTitle" class="form-input" placeholder="PASSENGER CAR SILENCER" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Category</label>
+          <input type="text" id="prodCategory" class="form-input" placeholder="Passenger Cars" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Specification</label>
+          <input type="text" id="prodSpec" class="form-input" placeholder="Galvanised Steel 1.6mm" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Description *</label>
+          <textarea id="prodDesc" class="form-textarea" rows="3" required></textarea>
+        </div>
+        <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:24px;">
+          <button type="button" class="btn btn-outline" onclick="closeModal('productModal')">Cancel</button>
+          <button type="submit" class="btn btn-primary" style="width:auto;">Save Product</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- BLOG MODAL -->
+  <div class="modal-backdrop" id="blogModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title" id="blogModalTitle">Create Blog Post</h3>
+        <button class="close-btn" onclick="closeModal('blogModal')">&times;</button>
+      </div>
+      <form id="blogForm">
+        <div class="form-group">
+          <label class="form-label">Blog Title *</label>
+          <input type="text" id="blogTitle" class="form-input" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Category</label>
+          <input type="text" id="blogCategory" class="form-input" placeholder="DPF Guides" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Excerpt</label>
+          <textarea id="blogExcerpt" class="form-textarea" rows="2"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Full Content *</label>
+          <textarea id="blogContent" class="form-textarea" rows="6" required></textarea>
+        </div>
+        <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:24px;">
+          <button type="button" class="btn btn-outline" onclick="closeModal('blogModal')">Cancel</button>
+          <button type="submit" class="btn btn-primary" style="width:auto;">Publish Blog</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = '/api';
+    let servicesData = [];
+    let productsData = [];
+    let blogsData = [];
+
+    // Auth Check
+    if (localStorage.getItem('adminToken')) {
+      document.getElementById('loginScreen').style.display = 'none';
+      loadAllData();
+    }
+
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
+
+      try {
+        const res = await fetch(`${API_BASE}/admin/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        const data = await res.json();
+        if (data.success) {
+          localStorage.setItem('adminToken', data.token);
+          document.getElementById('loginScreen').style.display = 'none';
+          loadAllData();
+        } else {
+          alert(data.error || 'Login failed');
+        }
+      } catch (err) { alert('Login request failed'); }
+    });
+
+    function logout() {
+      localStorage.removeItem('adminToken');
+      location.reload();
+    }
+
+    function switchTab(tabName) {
+      document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+      const tabs = ['Dashboard', 'Services', 'Products', 'Blogs', 'Leads'];
+      tabs.forEach(t => {
+        const el = document.getElementById(`tab${t}`);
+        if (el) el.style.display = (t.toLowerCase() === tabName ? 'block' : 'none');
+      });
+      document.getElementById('pageTitle').innerText = tabName.toUpperCase() + ' MANAGEMENT';
+    }
+
+    async function loadAllData() {
+      fetchServices();
+      fetchProducts();
+      fetchBlogs();
+      fetchLeads();
+    }
+
+    async function fetchServices() {
+      try {
+        const res = await fetch(`${API_BASE}/services?all=true`);
+        const data = await res.json();
+        if (data.success) {
+          servicesData = data.services || [];
+          document.getElementById('statServices').innerText = servicesData.length;
+          renderServicesTable();
+        }
+      } catch (err) { console.error(err); }
+    }
+
+    function renderServicesTable() {
+      const tbody = document.querySelector('#servicesTable tbody');
+      tbody.innerHTML = servicesData.map(s => `
+        <tr>
+          <td><i class="fa-solid fa-gear" style="color:#dc2626;"></i> ${s.icon || 'FaWrench'}</td>
+          <td><strong>${s.title}</strong></td>
+          <td>${s.desc}</td>
+          <td>${s.order || 1}</td>
+          <td><span class="badge ${s.visible !== false ? 'badge-success' : 'badge-warning'}">${s.visible !== false ? 'Active' : 'Hidden'}</span></td>
+          <td>
+            <button class="btn btn-outline btn-sm" onclick="editService('${s.id}')"><i class="fa-solid fa-pen"></i></button>
+            <button class="btn btn-danger btn-sm" onclick="deleteService('${s.id}')"><i class="fa-solid fa-trash"></i></button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    async function fetchProducts() {
+      try {
+        const res = await fetch(`${API_BASE}/products`);
+        const data = await res.json();
+        if (data.success) {
+          productsData = data.products || [];
+          document.getElementById('statProducts').innerText = productsData.length;
+          renderProductsTable();
+        }
+      } catch (err) { console.error(err); }
+    }
+
+    function renderProductsTable() {
+      const tbody = document.querySelector('#productsTable tbody');
+      tbody.innerHTML = productsData.map(p => `
+        <tr>
+          <td><strong>${p.title}</strong></td>
+          <td>${p.category || 'Silencer'}</td>
+          <td>${p.spec || '-'}</td>
+          <td>
+            <button class="btn btn-outline btn-sm" onclick="editProduct('${p.id}')"><i class="fa-solid fa-pen"></i></button>
+            <button class="btn btn-danger btn-sm" onclick="deleteProduct('${p.id}')"><i class="fa-solid fa-trash"></i></button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    async function fetchBlogs() {
+      try {
+        const res = await fetch(`${API_BASE}/blogs?all=true`);
+        const data = await res.json();
+        if (data.success) {
+          blogsData = data.blogs || [];
+          document.getElementById('statBlogs').innerText = blogsData.length;
+          renderBlogsTable();
+        }
+      } catch (err) { console.error(err); }
+    }
+
+    function renderBlogsTable() {
+      const tbody = document.querySelector('#blogsTable tbody');
+      tbody.innerHTML = blogsData.map(b => `
+        <tr>
+          <td><strong>${b.title}</strong></td>
+          <td>${b.category || 'General'}</td>
+          <td>${new Date(b.publishDate || Date.now()).toLocaleDateString()}</td>
+          <td><span class="badge ${b.visibility === 'visible' ? 'badge-success' : 'badge-warning'}">${b.visibility}</span></td>
+          <td>
+            <button class="btn btn-danger btn-sm" onclick="deleteBlog('${b.id || b._id}')"><i class="fa-solid fa-trash"></i></button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    async function fetchLeads() {
+      try {
+        const resEnq = await fetch(`${API_BASE}/enquiries`);
+        const dataEnq = await resEnq.json();
+        const resBook = await fetch(`${API_BASE}/bookings`);
+        const dataBook = await resBook.json();
+        
+        const total = (dataEnq.enquiries?.length || 0) + (dataBook.bookings?.length || 0);
+        document.getElementById('statLeads').innerText = total;
+
+        const tbodyEnq = document.querySelector('#enquiriesTable tbody');
+        tbodyEnq.innerHTML = (dataEnq.enquiries || []).map(e => `
+          <tr>
+            <td><strong>${e.name || 'Customer'}</strong></td>
+            <td><a href="tel:${e.phone}">${e.phone}</a></td>
+            <td>${e.product || 'General'}</td>
+            <td>${e.message || '-'}</td>
+            <td>${new Date(e.createdAt || Date.now()).toLocaleDateString()}</td>
+            <td><button class="btn btn-danger btn-sm" onclick="deleteEnquiry('${e.id}')"><i class="fa-solid fa-trash"></i></button></td>
+          </tr>
+        `).join('') || '<tr><td colspan="6">No enquiries received yet.</td></tr>';
+
+        const tbodyBook = document.querySelector('#recentBookingsTable tbody');
+        tbodyBook.innerHTML = (dataBook.bookings || []).map(b => `
+          <tr>
+            <td><strong>${b.customerName || 'Valued Customer'}</strong></td>
+            <td><a href="tel:${b.phone}">${b.phone}</a></td>
+            <td>${b.vehicleModel}</td>
+            <td>${b.preferredDate}</td>
+            <td><span class="badge badge-warning">${b.status || 'PENDING'}</span></td>
+          </tr>
+        `).join('') || '<tr><td colspan="5">No service bookings yet.</td></tr>';
+
+      } catch (err) { console.error(err); }
+    }
+
+    // Modal Handlers
+    function openServiceModal(id = null) {
+      document.getElementById('serviceForm').reset();
+      document.getElementById('svcId').value = '';
+      document.getElementById('serviceModalTitle').innerText = 'Add Dynamic Service';
+      document.getElementById('serviceModal').classList.add('show');
+    }
+
+    function editService(id) {
+      const s = servicesData.find(item => item.id === id);
+      if (!s) return;
+      document.getElementById('svcId').value = s.id;
+      document.getElementById('svcTitle').value = s.title;
+      document.getElementById('svcDesc').value = s.desc;
+      document.getElementById('svcIcon').value = s.icon || 'FaWrench';
+      document.getElementById('svcOrder').value = s.order || 1;
+      document.getElementById('serviceModalTitle').innerText = 'Edit Service';
+      document.getElementById('serviceModal').classList.add('show');
+    }
+
+    document.getElementById('serviceForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const id = document.getElementById('svcId').value;
+      const title = document.getElementById('svcTitle').value;
+      const desc = document.getElementById('svcDesc').value;
+      const icon = document.getElementById('svcIcon').value;
+      const order = Number(document.getElementById('svcOrder').value);
+
+      const url = id ? `${API_BASE}/services/${id}` : `${API_BASE}/services`;
+      const method = id ? 'PUT' : 'POST';
+
+      try {
+        const res = await fetch(url, {
+          method,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title, desc, icon, order })
+        });
+        const data = await res.json();
+        if (data.success) {
+          closeModal('serviceModal');
+          fetchServices();
+        } else alert(data.error || 'Failed to save service');
+      } catch (err) { alert('Error saving service'); }
+    });
+
+    async function deleteService(id) {
+      if (!confirm('Delete this service?')) return;
+      try {
+        const res = await fetch(`${API_BASE}/services/${id}`, { method: 'DELETE' });
+        const data = await res.json();
+        if (data.success) fetchServices();
+      } catch (err) { alert('Failed to delete service'); }
+    }
+
+    function openProductModal() {
+      document.getElementById('productForm').reset();
+      document.getElementById('prodId').value = '';
+      document.getElementById('productModalTitle').innerText = 'Add Product';
+      document.getElementById('productModal').classList.add('show');
+    }
+
+    document.getElementById('productForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const id = document.getElementById('prodId').value;
+      const title = document.getElementById('prodTitle').value;
+      const category = document.getElementById('prodCategory').value;
+      const spec = document.getElementById('prodSpec').value;
+      const desc = document.getElementById('prodDesc').value;
+
+      const url = id ? `${API_BASE}/products/${id}` : `${API_BASE}/products`;
+      const method = id ? 'PUT' : 'POST';
+
+      try {
+        const res = await fetch(url, {
+          method,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title, category, spec, desc })
+        });
+        const data = await res.json();
+        if (data.success) {
+          closeModal('productModal');
+          fetchProducts();
+        } else alert(data.error || 'Failed to save product');
+      } catch (err) { alert('Error saving product'); }
+    });
+
+    async function deleteProduct(id) {
+      if (!confirm('Delete product?')) return;
+      try {
+        const res = await fetch(`${API_BASE}/products/${id}`, { method: 'DELETE' });
+        if ((await res.json()).success) fetchProducts();
+      } catch (err) { alert('Failed to delete product'); }
+    }
+
+    function openBlogModal() {
+      document.getElementById('blogForm').reset();
+      document.getElementById('blogModal').classList.add('show');
+    }
+
+    document.getElementById('blogForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const title = document.getElementById('blogTitle').value;
+      const category = document.getElementById('blogCategory').value;
+      const excerpt = document.getElementById('blogExcerpt').value;
+      const content = document.getElementById('blogContent').value;
+
+      try {
+        const res = await fetch(`${API_BASE}/blogs`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title, category, excerpt, content })
+        });
+        if ((await res.json()).success) {
+          closeModal('blogModal');
+          fetchBlogs();
+        }
+      } catch (err) { alert('Error creating blog'); }
+    });
+
+    async function deleteBlog(id) {
+      if (!confirm('Delete blog post?')) return;
+      try {
+        const res = await fetch(`${API_BASE}/blogs/${id}`, { method: 'DELETE' });
+        if ((await res.json()).success) fetchBlogs();
+      } catch (err) { alert('Failed to delete blog'); }
+    }
+
+    async function deleteEnquiry(id) {
+      if (!confirm('Delete enquiry?')) return;
+      try {
+        const res = await fetch(`${API_BASE}/enquiries/${id}`, { method: 'DELETE' });
+        if ((await res.json()).success) fetchLeads();
+      } catch (err) { alert('Failed to delete enquiry'); }
+    }
+
+    function closeModal(modalId) {
+      document.getElementById(modalId).classList.remove('show');
+    }
+  </script>
+</body>
+</html>

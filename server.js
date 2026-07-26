@@ -9,8 +9,12 @@ const PORT = process.env.PORT || 5000;
 
 // Enable CORS for frontend domain & local testing
 app.use(cors());
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json({ limit: '10mb' }));
+app.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }));
+
+// Serve static admin dashboard from /admin
+app.use('/admin', express.static(path.join(__dirname, 'public', 'admin')));
+app.use('/public', express.static(path.join(__dirname, 'public')));
 
 // Subfolder base path middleware for cPanel deployments (e.g. /hiquality)
 app.use((req, res, next) => {
@@ -26,19 +30,30 @@ const dbPath = path.join(__dirname, 'data', 'db.json');
 function getDbData() {
   try {
     if (!fs.existsSync(dbPath)) {
-      return { products: [], enquiries: [], bookings: [] };
+      return { products: [], services: [], blogs: [], enquiries: [], bookings: [] };
     }
     const content = fs.readFileSync(dbPath, 'utf8');
-    return JSON.parse(content);
+    const parsed = JSON.parse(content);
+    return {
+      products: parsed.products || [],
+      services: parsed.services || [],
+      blogs: parsed.blogs || [],
+      enquiries: parsed.enquiries || [],
+      bookings: parsed.bookings || []
+    };
   } catch (error) {
     console.error('Error reading db.json:', error);
-    return { products: [], enquiries: [], bookings: [] };
+    return { products: [], services: [], blogs: [], enquiries: [], bookings: [] };
   }
 }
 
 // Helper to write database JSON
 function saveDbData(data) {
   try {
+    const dirPath = path.dirname(dbPath);
+    if (!fs.existsSync(dirPath)) {
+      fs.mkdirSync(dirPath, { recursive: true });
+    }
     fs.writeFileSync(dbPath, JSON.stringify(data, null, 2), 'utf8');
     return true;
   } catch (error) {
@@ -51,7 +66,8 @@ function saveDbData(data) {
 app.get('/', (req, res) => {
   res.json({
     status: 'ONLINE',
-    message: 'Hi Quality Silencers Express API Server is Running!',
+    message: 'Hi Quality Silencers Express API Server & Admin Portal',
+    adminUrl: '/admin',
     timestamp: new Date().toISOString()
   });
 });
@@ -59,6 +75,134 @@ app.get('/', (req, res) => {
 app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', environment: process.env.NODE_ENV || 'production' });
 });
+
+// ==========================================
+// ADMIN AUTHENTICATION
+// ==========================================
+app.post('/api/admin/login', (req, res) => {
+  const { email, password } = req.body;
+  const validEmail = email === 'highqualityadmin.com' || email === 'highqualityadmin@gmail.com' || email === 'admin@hiquality.com';
+  const validPassword = password === 'highqualityadmin12345' || password === 'admin123';
+
+  if (!validEmail || !validPassword) {
+    return res.status(401).json({ success: false, error: 'Invalid email or password' });
+  }
+
+  res.json({
+    success: true,
+    message: 'Admin login successful',
+    token: `admin-token-${Date.now()}`,
+    user: { email, name: 'Hi-Quality Admin' }
+  });
+});
+
+// ==========================================
+// DYNAMIC SERVICES ENDPOINTS
+// ==========================================
+
+// GET /api/services -> Fetch all services
+app.get('/api/services', (req, res) => {
+  const data = getDbData();
+  const includeHidden = req.query.all === 'true';
+  let services = data.services || [];
+  if (!includeHidden) {
+    services = services.filter(s => s.visible !== false);
+  }
+  services.sort((a, b) => (a.order || 0) - (b.order || 0));
+  res.json({
+    success: true,
+    count: services.length,
+    services
+  });
+});
+
+// POST /api/services -> Add new service
+app.post('/api/services', (req, res) => {
+  try {
+    const { title, desc, icon, link, order, visible } = req.body;
+    if (!title || !desc) {
+      return res.status(400).json({ success: false, error: 'Title and description are required' });
+    }
+
+    const data = getDbData();
+    const newService = {
+      id: `svc-${Date.now()}`,
+      title,
+      desc,
+      icon: icon || 'FaWrench',
+      link: link || '#contact',
+      order: Number(order) || (data.services.length + 1),
+      visible: visible !== undefined ? Boolean(visible) : true
+    };
+
+    data.services.push(newService);
+    saveDbData(data);
+
+    res.status(201).json({
+      success: true,
+      message: 'Service added successfully!',
+      service: newService
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, error: 'Failed to add service' });
+  }
+});
+
+// PUT /api/services/:id -> Update existing service
+app.put('/api/services/:id', (req, res) => {
+  try {
+    const { id } = req.params;
+    const data = getDbData();
+    const index = data.services.findIndex(s => s.id === id || s._id === id);
+
+    if (index === -1) {
+      return res.status(404).json({ success: false, error: 'Service not found' });
+    }
+
+    data.services[index] = {
+      ...data.services[index],
+      ...req.body,
+      id: data.services[index].id
+    };
+
+    saveDbData(data);
+
+    res.json({
+      success: true,
+      message: 'Service updated successfully!',
+      service: data.services[index]
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, error: 'Failed to update service' });
+  }
+});
+
+// DELETE /api/services/:id -> Delete service
+app.delete('/api/services/:id', (req, res) => {
+  try {
+    const { id } = req.params;
+    const data = getDbData();
+    const initialLen = data.services.length;
+    data.services = data.services.filter(s => s.id !== id && s._id !== id);
+
+    if (data.services.length === initialLen) {
+      return res.status(404).json({ success: false, error: 'Service not found' });
+    }
+
+    saveDbData(data);
+
+    res.json({
+      success: true,
+      message: 'Service deleted successfully'
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, error: 'Failed to delete service' });
+  }
+});
+
+// ==========================================
+// PRODUCTS ENDPOINTS
+// ==========================================
 
 // GET /api/products -> Fetch all products
 app.get('/api/products', (req, res) => {
@@ -101,47 +245,61 @@ app.post('/api/products', (req, res) => {
   }
 });
 
-// GET /api/enquiries -> Get all contact enquiries
-app.get('/api/enquiries', (req, res) => {
-  const data = getDbData();
-  res.json({
-    success: true,
-    count: data.enquiries.length,
-    enquiries: data.enquiries
-  });
-});
-
-// POST /api/enquiries -> Submit new customer enquiry
-app.post('/api/enquiries', (req, res) => {
+// PUT /api/products/:id -> Update product
+app.put('/api/products/:id', (req, res) => {
   try {
-    const { name, phone, email, message, product } = req.body;
-    if (!phone) {
-      return res.status(400).json({ success: false, error: 'Phone number is required' });
+    const { id } = req.params;
+    const data = getDbData();
+    const index = data.products.findIndex(p => p.id === id || p._id === id);
+
+    if (index === -1) {
+      return res.status(404).json({ success: false, error: 'Product not found' });
     }
 
-    const data = getDbData();
-    const newEnquiry = {
-      id: `enq-${Date.now()}`,
-      name: name || 'Customer',
-      phone,
-      email: email || '',
-      message: message || '',
-      product: product || 'General Enquiry',
-      createdAt: new Date().toISOString()
+    data.products[index] = {
+      ...data.products[index],
+      ...req.body,
+      id: data.products[index].id
     };
 
-    data.enquiries.push(newEnquiry);
     saveDbData(data);
 
-    res.status(201).json({
+    res.json({
       success: true,
-      message: 'Enquiry received! We will contact you shortly.',
-      enquiry: newEnquiry
+      message: 'Product updated successfully!',
+      product: data.products[index]
     });
   } catch (err) {
-    res.status(500).json({ success: false, error: 'Failed to process enquiry' });
+    res.status(500).json({ success: false, error: 'Failed to update product' });
   }
 });
+
+// DELETE /api/products/:id -> Delete product
+app.delete('/api/products/:id', (req, res) => {
+  try {
+    const { id } = req.params;
+    const data = getDbData();
+    const initialLen = data.products.length;
+    data.products = data.products.filter(p => p.id !== id && p._id !== id);
+
+    if (data.products.length === initialLen) {
+      return res.status(404).json({ success: false, error: 'Product not found' });
+    }
+
+    saveDbData(data);
+
+    res.json({
+      success: true,
+      message: 'Product deleted successfully!'
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, error: 'Failed to delete product' });
+  }
+});
+
+// ==========================================
+// BLOGS ENDPOINTS
+// ==========================================
 
 // GET /api/blogs -> Fetch all blog posts
 app.get('/api/blogs', (req, res) => {
@@ -192,6 +350,98 @@ app.post('/api/blogs', (req, res) => {
   }
 });
 
+// PUT /api/blogs/:id -> Update blog post
+app.put('/api/blogs/:id', (req, res) => {
+  try {
+    const { id } = req.params;
+    const data = getDbData();
+    const index = data.blogs.findIndex(b => b.id === id || b._id === id);
+
+    if (index === -1) {
+      return res.status(404).json({ success: false, error: 'Blog not found' });
+    }
+
+    data.blogs[index] = {
+      ...data.blogs[index],
+      ...req.body
+    };
+
+    saveDbData(data);
+
+    res.json({ success: true, message: 'Blog post updated', blog: data.blogs[index] });
+  } catch (err) {
+    res.status(500).json({ success: false, error: 'Failed to update blog post' });
+  }
+});
+
+// DELETE /api/blogs/:id -> Delete blog post
+app.delete('/api/blogs/:id', (req, res) => {
+  try {
+    const { id } = req.params;
+    const data = getDbData();
+    data.blogs = data.blogs.filter(b => b.id !== id && b._id !== id);
+    saveDbData(data);
+    res.json({ success: true, message: 'Blog post deleted' });
+  } catch (err) {
+    res.status(500).json({ success: false, error: 'Failed to delete blog post' });
+  }
+});
+
+// ==========================================
+// ENQUIRIES & BOOKINGS
+// ==========================================
+
+// GET /api/enquiries -> Get all contact enquiries
+app.get('/api/enquiries', (req, res) => {
+  const data = getDbData();
+  res.json({
+    success: true,
+    count: data.enquiries.length,
+    enquiries: data.enquiries
+  });
+});
+
+// POST /api/enquiries -> Submit new customer enquiry
+app.post('/api/enquiries', (req, res) => {
+  try {
+    const { name, phone, email, message, product } = req.body;
+    if (!phone) {
+      return res.status(400).json({ success: false, error: 'Phone number is required' });
+    }
+
+    const data = getDbData();
+    const newEnquiry = {
+      id: `enq-${Date.now()}`,
+      name: name || 'Customer',
+      phone,
+      email: email || '',
+      message: message || '',
+      product: product || 'General Enquiry',
+      createdAt: new Date().toISOString()
+    };
+
+    data.enquiries.unshift(newEnquiry);
+    saveDbData(data);
+
+    res.status(201).json({
+      success: true,
+      message: 'Enquiry received! We will contact you shortly.',
+      enquiry: newEnquiry
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, error: 'Failed to process enquiry' });
+  }
+});
+
+// DELETE /api/enquiries/:id
+app.delete('/api/enquiries/:id', (req, res) => {
+  const { id } = req.params;
+  const data = getDbData();
+  data.enquiries = data.enquiries.filter(e => e.id !== id);
+  saveDbData(data);
+  res.json({ success: true, message: 'Enquiry deleted' });
+});
+
 // GET /api/bookings -> Get DPF service bookings
 app.get('/api/bookings', (req, res) => {
   const data = getDbData();
@@ -221,7 +471,7 @@ app.post('/api/bookings', (req, res) => {
       createdAt: new Date().toISOString()
     };
 
-    data.bookings.push(newBooking);
+    data.bookings.unshift(newBooking);
     saveDbData(data);
 
     res.status(201).json({
@@ -234,10 +484,20 @@ app.post('/api/bookings', (req, res) => {
   }
 });
 
+// DELETE /api/bookings/:id
+app.delete('/api/bookings/:id', (req, res) => {
+  const { id } = req.params;
+  const data = getDbData();
+  data.bookings = data.bookings.filter(b => b.id !== id);
+  saveDbData(data);
+  res.json({ success: true, message: 'Booking deleted' });
+});
+
 // Start Express Server
 const serverPort = process.env.PORT || 5000;
 app.listen(serverPort, () => {
-  console.log(`Backend Express server running on ${serverPort}`);
+  console.log(`Backend Express server running on port ${serverPort}`);
+  console.log(`Admin portal available at http://localhost:${serverPort}/admin`);
 });
 
 module.exports = app;

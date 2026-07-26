@@ -49,6 +49,54 @@
       "spec": "98%+ Soot & Ash Removal"
     }
   ],
+  "services": [
+    {
+      "id": "svc-1",
+      "title": "Professional DPF Restoration",
+      "desc": "4-stage scientific DPF cleaning restoring original exhaust flow & back pressure",
+      "icon": "FaFilter",
+      "link": "#dpf-cleaning",
+      "order": 1,
+      "visible": true
+    },
+    {
+      "id": "svc-2",
+      "title": "OEM Silencer Manufacturing",
+      "desc": "ISO certified silencer manufacturing with 15+ years of OEM precision experience",
+      "icon": "FaIndustry",
+      "link": "#products",
+      "order": 2,
+      "visible": true
+    },
+    {
+      "id": "svc-3",
+      "title": "Catalytic Converter Service",
+      "desc": "Complete diagnostic, cleaning & replacement for optimum emission control",
+      "icon": "FaLeaf",
+      "link": "#products",
+      "order": 3,
+      "visible": true
+    },
+    {
+      "id": "svc-4",
+      "title": "Flex Pipe Replacement",
+      "desc": "Precision flex pipe welding, replacement & vibration dampening exhaust repair",
+      "icon": "FaLink",
+      "link": "#products",
+      "order": 4,
+      "visible": true
+    },
+    {
+      "id": "svc-5",
+      "title": "Exhaust Repair",
+      "desc": "Complete exhaust system diagnostics, leak repair, and component restoration",
+      "icon": "FaWrench",
+      "link": "#contact",
+      "order": 5,
+      "visible": true
+    }
+  ],
+  "blogs": [],
   "enquiries": [],
   "bookings": []
 }
