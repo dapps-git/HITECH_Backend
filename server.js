@@ -3,6 +3,16 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const fs = require('fs');
 const path = require('path');
+const multer = require('multer');
+const { v2: cloudinary } = require('cloudinary');
+
+const upload = multer({ storage: multer.memoryStorage() });
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME || 'zkgbtcke',
+  api_key: process.env.CLOUDINARY_API_KEY || '976169123815675',
+  api_secret: process.env.CLOUDINARY_API_SECRET || 'C2xiAGARCxSJTImhnoKwNAr_PR8'
+});
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -88,12 +98,49 @@ app.post('/api/admin/login', (req, res) => {
     return res.status(401).json({ success: false, error: 'Invalid email or password' });
   }
 
+
   res.json({
     success: true,
     message: 'Admin login successful',
     token: `admin-token-${Date.now()}`,
     user: { email, name: 'Hi-Quality Admin' }
   });
+});
+
+// ==========================================
+// IMAGE UPLOAD TO CLOUDINARY
+// ==========================================
+app.post('/api/upload', upload.single('file'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ success: false, error: 'No file uploaded' });
+    }
+
+    const uploadStream = cloudinary.uploader.upload_stream(
+      {
+        folder: 'hitech_products',
+        format: 'webp',
+        quality: 'auto',
+        fetch_format: 'webp'
+      },
+      (error, result) => {
+        if (error) {
+          console.error('Cloudinary error:', error);
+          return res.status(500).json({ success: false, error: 'Cloudinary upload failed' });
+        }
+        res.json({
+          success: true,
+          message: 'Image uploaded successfully!',
+          url: result.secure_url,
+          publicId: result.public_id
+        });
+      }
+    );
+
+    uploadStream.end(req.file.buffer);
+  } catch (err) {
+    res.status(500).json({ success: false, error: 'Failed to upload image' });
+  }
 });
 
 // ==========================================
