@@ -429,6 +429,16 @@
           <input type="text" id="prodCategory" class="form-input" placeholder="Passenger Cars" />
         </div>
         <div class="form-group">
+          <label class="form-label">Product Image</label>
+          <div style="display:flex; gap:10px; align-items:center;">
+            <input type="file" id="prodImageFile" accept="image/*" class="form-input" onchange="uploadImage(this, 'prodImage', 'prodImagePreview')" />
+          </div>
+          <input type="hidden" id="prodImage" />
+          <div id="prodImagePreview" style="margin-top:8px; display:none;">
+            <img src="" style="height:60px; border-radius:6px; border:1px solid #e2e8f0; object-fit:cover;" />
+          </div>
+        </div>
+        <div class="form-group">
           <label class="form-label">Specification</label>
           <input type="text" id="prodSpec" class="form-input" placeholder="Galvanised Steel 1.6mm" />
         </div>
@@ -784,6 +794,31 @@
         const res = await fetch(`${API_BASE}/enquiries/${id}`, { method: 'DELETE' });
         if ((await res.json()).success) fetchLeads();
       } catch (err) { alert('Failed to delete enquiry'); }
+    }
+
+    async function uploadImage(fileInput, targetInputId, previewContainerId) {
+      const file = fileInput.files[0];
+      if (!file) return;
+
+      const formData = new FormData();
+      formData.append('file', file);
+
+      try {
+        const res = await fetch(`${API_BASE}/upload`, {
+          method: 'POST',
+          body: formData
+        });
+        const data = await res.json();
+        if (data.success) {
+          document.getElementById(targetInputId).value = data.url;
+          const preview = document.getElementById(previewContainerId);
+          if (preview) {
+            preview.querySelector('img').src = data.url;
+            preview.style.display = 'block';
+          }
+          alert('Image uploaded to Cloudinary successfully!');
+        } else alert(data.error || 'Upload failed');
+      } catch (err) { alert('Image upload failed'); }
     }
 
     function closeModal(modalId) {
