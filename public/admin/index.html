@@ -487,7 +487,10 @@
   </div>
 
   <script>
-    const API_BASE = '/api';
+    const basePath = window.location.pathname.includes('/admin')
+      ? window.location.pathname.substring(0, window.location.pathname.indexOf('/admin'))
+      : '';
+    const API_BASE = (basePath ? basePath : '') + '/api';
     let servicesData = [];
     let productsData = [];
     let blogsData = [];
