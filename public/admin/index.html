@@ -487,12 +487,21 @@
   </div>
 
   <script>
-    // Detect deployment subfolder (e.g. /hiquality/admin → API at /hiquality/api)
-    // Strip trailing /admin segment to get the true base path
+    // API_BASE detection for cPanel Phusion Passenger deployments
+    // On cPanel: tweaki.pw/hiquality/admin → Passenger only routes /hiquality/admin/* to Node
+    //   So API calls MUST go through /hiquality/admin/api/* (not /hiquality/api/*)
+    // On localhost: admin at /admin → API at /api directly
     const rawPath = window.location.pathname;
     const adminIdx = rawPath.indexOf('/admin');
-    const basePath = adminIdx > 0 ? rawPath.substring(0, adminIdx) : '';
-    const API_BASE = basePath + '/api';
+    let API_BASE;
+    if (adminIdx > 0) {
+      // cPanel: prefix before /admin exists (e.g. /hiquality/admin)
+      // Include /admin in the API path so Passenger routes it to Node
+      API_BASE = rawPath.substring(0, adminIdx) + '/admin/api';
+    } else {
+      // Local or root deployment: /admin → API at /api
+      API_BASE = '/api';
+    }
     console.log('[Admin] pathname:', rawPath, '| API_BASE:', API_BASE);
     let servicesData = [];
     let productsData = [];
