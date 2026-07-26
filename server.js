@@ -22,16 +22,21 @@ app.use(cors());
 app.use(bodyParser.json({ limit: '10mb' }));
 app.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }));
 
-// Serve static admin dashboard from /admin
-app.use('/admin', express.static(path.join(__dirname, 'public', 'admin')));
-app.use('/public', express.static(path.join(__dirname, 'public')));
-
 // Subfolder base path middleware for cPanel deployments (e.g. /hiquality)
 app.use((req, res, next) => {
   if (req.url.startsWith('/hiquality')) {
     req.url = req.url.replace('/hiquality', '') || '/';
   }
   next();
+});
+
+// Serve static admin dashboard from /admin
+app.use('/admin', express.static(path.join(__dirname, 'public', 'admin')));
+app.use('/public', express.static(path.join(__dirname, 'public')));
+
+// Explicit handler for /admin route
+app.get(['/admin', '/admin/*'], (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'admin', 'index.html'));
 });
 
 const dbPath = path.join(__dirname, 'data', 'db.json');
