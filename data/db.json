@@ -2,51 +2,48 @@
   "products": [
     {
       "id": "prod-1",
-      "title": "PASSENGER CAR SILENCERS",
+      "title": "CAR SILENCERS",
       "image": "/images/prod_passenger_car.png",
       "category": "Passenger Cars",
-      "desc": "High performance silencers for all passenger cars. Built for durability and perfect fit.",
+      "shortDesc": "High performance OEM specification silencers for all passenger cars. Built for durability.",
+      "fullDesc": "High performance OEM specification silencer engineered for passenger cars. Features heavy-duty galvanised & stainless steel construction, precision acoustic tuning, and minimum 10-year service life.",
       "spec": "Galvanised / Stainless Steel 1.6mm"
     },
     {
       "id": "prod-2",
-      "title": "SUV & PICKUP SILENCERS",
+      "title": "SUV SILENCERS",
       "image": "/images/prod_suv_pickup.png",
       "category": "SUV & Pickup",
-      "desc": "Robust silencers designed for SUVs and pickup trucks for powerful performance.",
+      "shortDesc": "Robust silencers designed for SUVs and pickup trucks for powerful performance.",
+      "fullDesc": "Robust silencers specially engineered for SUVs and 4x4 pickup trucks. Designed for high exhaust flow, maximum backpressure reduction, and durable performance under extreme driving conditions.",
       "spec": "Heavy Duty 2.0mm Steel"
     },
     {
       "id": "prod-3",
-      "title": "LCV SILENCERS",
-      "image": "/images/prod_lcv.png",
+      "title": "COMMERCIAL VEHICLE SILENCERS",
+      "image": "/images/prod_truck_bus.png",
       "category": "Commercial LCV",
-      "desc": "OEM specification silencers for Light Commercial Vehicles. Strong. Reliable. Long lasting.",
+      "shortDesc": "Heavy duty silencers for LCVs, trucks, and commercial fleet vehicles.",
+      "fullDesc": "Heavy-duty commercial silencers built for LCVs, trucks, and buses. Engineered to handle high thermal stress and continuous long-distance fleet operations with OEM precision fitment.",
       "spec": "OEM Grade Flange Fitment"
     },
     {
       "id": "prod-4",
-      "title": "TRUCK & BUS SILENCERS",
-      "image": "/images/prod_truck_bus.png",
-      "category": "Heavy Commercial",
-      "desc": "Heavy duty silencers for trucks and buses. Built for high performance and extended life.",
+      "title": "GENERATED SILENCERS",
+      "image": "/images/prod_lcv.png",
+      "category": "Industrial & Heavy",
+      "shortDesc": "Precision generated silencers engineered for consistent flow dynamics and low back pressure.",
+      "fullDesc": "Precision generated silencers engineered for stationary generators, industrial engines, and heavy-duty machinery. Provides superior acoustic dampening and low backpressure flow dynamics.",
       "spec": "Industrial Heavy Drum Assembly"
     },
     {
       "id": "prod-5",
-      "title": "CATALYTIC CONVERTERS",
+      "title": "CUSTOM SILENCERS",
       "image": "/images/prod_catalytic.png",
-      "category": "Emission Control",
-      "desc": "High quality catalytic converters for reduced emissions and better engine performance.",
-      "spec": "Metallic Honeycomb Core"
-    },
-    {
-      "id": "prod-6",
-      "title": "DPF / DOC / SCR SERVICES",
-      "image": "/images/prod_dpf_service.png",
-      "category": "DPF Restoration",
-      "desc": "Professional DPF cleaning, restoration & replacement services with advanced technology.",
-      "spec": "98%+ Soot & Ash Removal"
+      "category": "Custom Fabrication",
+      "shortDesc": "Bespoke custom-built silencers tailored to exact vehicle specifications and customer requirements.",
+      "fullDesc": "Custom-engineered silencers built to exact client specifications, custom vehicle dimensions, and specialized noise control requirements. Crafted using premium corrosion-resistant alloys.",
+      "spec": "Custom Baffle & Flange Assembly"
     }
   ],
   "services": [
@@ -97,6 +94,5 @@
     }
   ],
   "blogs": [],
-  "enquiries": [],
-  "bookings": []
+  "enquiries": []
 }
