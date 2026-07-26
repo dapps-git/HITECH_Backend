@@ -288,22 +288,36 @@ app.get('/api/products', (req, res) => {
   });
 });
 
+// GET /api/products/:id -> Fetch single product details
+app.get('/api/products/:id', (req, res) => {
+  const { id } = req.params;
+  const data = getDbData();
+  const product = (data.products || []).find(p => p.id === id || p._id === id);
+  if (!product) {
+    return res.status(404).json({ success: false, error: 'Product not found' });
+  }
+  res.json({ success: true, product });
+});
+
 // POST /api/products -> Add new product
 app.post('/api/products', (req, res) => {
   try {
-    const { title, category, desc, image, spec } = req.body;
-    if (!title || !desc) {
-      return res.status(400).json({ success: false, error: 'Title and description are required' });
+    const { title, category, desc, shortDesc, fullDesc, image, spec } = req.body;
+    if (!title) {
+      return res.status(400).json({ success: false, error: 'Product title is required' });
     }
 
     const data = getDbData();
     const newProduct = {
       id: `prod-${Date.now()}`,
+      _id: `prod-${Date.now()}`,
       title: title.toUpperCase(),
       image: image || '/images/prod_passenger_car.png',
       category: category || 'General Silencer',
-      desc,
-      spec: spec || 'OEM Specification'
+      spec: spec || 'OEM Specification',
+      shortDesc: shortDesc || desc || 'High performance OEM specification silencer built for maximum durability and flow efficiency.',
+      fullDesc: fullDesc || desc || shortDesc || 'High performance OEM specification silencer engineered with precision acoustic dampening and corrosion-resistant stainless steel alloys. Designed to deliver optimal backpressure reduction, enhanced engine efficiency, and quiet exhaust notes for demanding driving conditions.',
+      desc: desc || shortDesc || 'High performance OEM specification silencer built for maximum durability.'
     };
 
     data.products.push(newProduct);

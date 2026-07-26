@@ -190,9 +190,6 @@
         <div class="nav-item" onclick="switchTab('blogs')">
           <i class="fa-solid fa-newspaper"></i><span class="nav-text">Blog Posts</span>
         </div>
-        <div class="nav-item" onclick="switchTab('leads')">
-          <i class="fa-solid fa-envelope-open-text"></i><span class="nav-text">Enquiries & Bookings</span>
-        </div>
       </nav>
 
       <div class="nav-item" onclick="logout()" style="color:#ef4444; margin-top:auto;">
@@ -207,7 +204,7 @@
       <div class="header-bar">
         <div>
           <h1 class="page-title" id="pageTitle">Dashboard Overview</h1>
-          <p class="page-sub" id="pageSub">Real-time control panel for Hi-Quality Silencers website & services</p>
+          <p class="page-sub" id="pageSub">Real-time control panel for Hi-Quality Silencers website &amp; services</p>
         </div>
         <div>
           <a href="/" target="_blank" class="btn btn-outline" style="text-decoration:none;">
@@ -216,7 +213,7 @@
         </div>
       </div>
 
-      <!-- STATS OVERVIEW -->
+      <!-- STATS OVERVIEW (ONLY 3 CARDS: SERVICES, PRODUCTS, BLOGS) -->
       <div class="stats-grid" id="statsGrid">
         <div class="stat-card">
           <div class="stat-icon"><i class="fa-solid fa-wrench"></i></div>
@@ -237,13 +234,6 @@
           <div>
             <div class="stat-val" id="statBlogs">0</div>
             <div class="stat-lbl">Blog Articles</div>
-          </div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon"><i class="fa-solid fa-paper-plane"></i></div>
-          <div>
-            <div class="stat-val" id="statLeads">0</div>
-            <div class="stat-lbl">Customer Leads</div>
           </div>
         </div>
       </div>
@@ -420,42 +410,60 @@
 
   <!-- PRODUCT MODAL -->
   <div class="modal-backdrop" id="productModal">
-    <div class="modal">
+    <div class="modal modal-lg" style="max-width: 720px;">
       <div class="modal-header">
-        <h3 class="modal-title" id="productModalTitle">Add Product</h3>
+        <h3 class="modal-title" id="productModalTitle"><i class="fa-solid fa-box-archive" style="color:#dc2626; margin-right:8px;"></i> Add Product</h3>
         <button class="close-btn" onclick="closeModal('productModal')">&times;</button>
       </div>
       <form id="productForm">
         <input type="hidden" id="prodId" />
-        <div class="form-group">
-          <label class="form-label">Product Name *</label>
-          <input type="text" id="prodTitle" class="form-input" placeholder="PASSENGER CAR SILENCER" required />
-        </div>
-        <div class="form-group">
-          <label class="form-label">Category</label>
-          <input type="text" id="prodCategory" class="form-input" placeholder="Passenger Cars" />
-        </div>
-        <div class="form-group">
-          <label class="form-label">Product Image</label>
-          <div style="display:flex; gap:10px; align-items:center;">
-            <input type="file" id="prodImageFile" accept="image/*" class="form-input" onchange="uploadImage(this, 'prodImage', 'prodImagePreview')" />
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+          <div class="form-group">
+            <label class="form-label">Product Name *</label>
+            <input type="text" id="prodTitle" class="form-input" placeholder="e.g. PASSENGER CAR SILENCER" required />
           </div>
-          <input type="hidden" id="prodImage" />
-          <div id="prodImagePreview" style="margin-top:8px; display:none;">
-            <img src="" style="height:60px; border-radius:6px; border:1px solid #e2e8f0; object-fit:cover;" />
+          <div class="form-group">
+            <label class="form-label">Category</label>
+            <input type="text" id="prodCategory" class="form-input" placeholder="e.g. Passenger Cars" />
           </div>
         </div>
-        <div class="form-group">
-          <label class="form-label">Specification</label>
-          <input type="text" id="prodSpec" class="form-input" placeholder="Galvanised Steel 1.6mm" />
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+          <div class="form-group">
+            <label class="form-label">Specification</label>
+            <input type="text" id="prodSpec" class="form-input" placeholder="e.g. 98%+ Soot & Ash Removal" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Product Image (Cloudinary Upload)</label>
+            <div style="display:flex; gap:8px;">
+              <input type="text" id="prodImage" class="form-input" placeholder="https://res.cloudinary.com/..." />
+              <label class="btn btn-outline" style="cursor:pointer; white-space:nowrap;">
+                <i class="fa-solid fa-upload"></i> Upload
+                <input type="file" accept="image/*" style="display:none;" onchange="uploadImage(this, 'prodImage', 'prodImagePreview')" />
+              </label>
+            </div>
+            <div id="prodImagePreview" style="margin-top:8px; display:none;">
+              <img src="" style="height:60px; border-radius:6px; border:1px solid #e2e8f0; object-fit:cover;" />
+            </div>
+          </div>
         </div>
+
+        <!-- Short Description (2-line Homepage Card Summary) -->
         <div class="form-group">
-          <label class="form-label">Description *</label>
-          <textarea id="prodDesc" class="form-textarea" rows="3" required></textarea>
+          <label class="form-label">Short Description (2-Line Summary for Homepage Card) *</label>
+          <textarea id="prodShortDesc" class="form-textarea" rows="2" placeholder="Brief 2-line summary shown on homepage cards..." required></textarea>
         </div>
+
+        <!-- Big Full Description (Shown on Product Inner Page) -->
+        <div class="form-group">
+          <label class="form-label">Big Full Description (Shown on Product Detail Inner Page) *</label>
+          <textarea id="prodFullDesc" class="form-textarea" rows="5" placeholder="Detailed multi-paragraph description showing features, technical specs, material construction, and vehicle compatibility..." required></textarea>
+        </div>
+
         <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:24px;">
           <button type="button" class="btn btn-outline" onclick="closeModal('productModal')">Cancel</button>
-          <button type="submit" class="btn btn-primary" style="width:auto;">Save Product</button>
+          <button type="submit" class="btn btn-primary" style="width:auto;"><i class="fa-solid fa-save"></i> Save Product</button>
         </div>
       </form>
     </div>
@@ -864,7 +872,32 @@
     function openProductModal() {
       document.getElementById('productForm').reset();
       document.getElementById('prodId').value = '';
-      document.getElementById('productModalTitle').innerText = 'Add Product';
+      document.getElementById('prodImage').value = '';
+      const preview = document.getElementById('prodImagePreview');
+      if (preview) preview.style.display = 'none';
+      document.getElementById('productModalTitle').innerHTML = '<i class="fa-solid fa-box-archive" style="color:#dc2626; margin-right:8px;"></i> Add Product';
+      document.getElementById('productModal').classList.add('show');
+    }
+
+    function editProduct(id) {
+      const p = productsData.find(item => item.id === id || item._id === id);
+      if (!p) return;
+
+      document.getElementById('prodId').value = p.id || p._id;
+      document.getElementById('prodTitle').value = p.title || '';
+      document.getElementById('prodCategory').value = p.category || '';
+      document.getElementById('prodSpec').value = p.spec || '';
+      document.getElementById('prodImage').value = p.image || '';
+      document.getElementById('prodShortDesc').value = p.shortDesc || p.desc || '';
+      document.getElementById('prodFullDesc').value = p.fullDesc || p.desc || '';
+
+      const preview = document.getElementById('prodImagePreview');
+      if (preview && p.image) {
+        preview.querySelector('img').src = p.image;
+        preview.style.display = 'block';
+      }
+
+      document.getElementById('productModalTitle').innerHTML = '<i class="fa-solid fa-pen-to-square" style="color:#2563eb; margin-right:8px;"></i> Edit Product';
       document.getElementById('productModal').classList.add('show');
     }
 
@@ -874,7 +907,9 @@
       const title = document.getElementById('prodTitle').value;
       const category = document.getElementById('prodCategory').value;
       const spec = document.getElementById('prodSpec').value;
-      const desc = document.getElementById('prodDesc').value;
+      const image = document.getElementById('prodImage').value;
+      const shortDesc = document.getElementById('prodShortDesc').value;
+      const fullDesc = document.getElementById('prodFullDesc').value;
 
       const url = id ? `${API_BASE}/products/${id}` : `${API_BASE}/products`;
       const method = id ? 'PUT' : 'POST';
@@ -883,12 +918,21 @@
         const res = await fetch(url, {
           method,
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ title, category, spec, desc })
+          body: JSON.stringify({
+            title,
+            category,
+            spec,
+            image,
+            shortDesc,
+            fullDesc,
+            desc: shortDesc
+          })
         });
         const data = await res.json();
         if (data.success) {
           closeModal('productModal');
           fetchProducts();
+          alert(id ? 'Product updated successfully!' : 'Product added successfully!');
         } else alert(data.error || 'Failed to save product');
       } catch (err) { alert('Error saving product'); }
     });
