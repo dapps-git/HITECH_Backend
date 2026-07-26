@@ -12,6 +12,14 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+// Subfolder base path middleware for cPanel deployments (e.g. /hiquality)
+app.use((req, res, next) => {
+  if (req.url.startsWith('/hiquality')) {
+    req.url = req.url.replace('/hiquality', '') || '/';
+  }
+  next();
+});
+
 const dbPath = path.join(__dirname, 'data', 'db.json');
 
 // Helper to read database JSON
@@ -135,19 +143,6 @@ app.post('/api/enquiries', (req, res) => {
   }
 });
 
-// POST /api/admin/login -> Admin Login
-app.post('/api/admin/login', (req, res) => {
-  const { email, password } = req.body;
-  const validEmail = email === 'highqualityadmin.com' || email === 'highqualityadmin@gmail.com';
-  const validPassword = password === 'highqualityadmin12345';
-
-  if (!validEmail || !validPassword) {
-    return res.status(401).json({ success: false, error: 'Invalid email or password' });
-  }
-
-  res.json({ success: true, message: 'Admin login successful', token: `admin-token-${Date.now()}` });
-});
-
 // GET /api/blogs -> Fetch all blog posts
 app.get('/api/blogs', (req, res) => {
   const includeHidden = req.query.all === 'true';
@@ -240,6 +235,9 @@ app.post('/api/bookings', (req, res) => {
 });
 
 // Start Express Server
-app.listen(PORT, () => {
-  console.log(`Backend Express server running on port ${PORT}`);
+const serverPort = process.env.PORT || 5000;
+app.listen(serverPort, () => {
+  console.log(`Backend Express server running on ${serverPort}`);
 });
+
+module.exports = app;
