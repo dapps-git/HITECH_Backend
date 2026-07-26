@@ -123,9 +123,16 @@
       background: #ffffff; border-radius: 16px; width: 100%; max-width: 540px;
       max-height: 90vh; overflow-y: auto; padding: 28px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
     }
+    .modal.modal-lg { max-width: 920px; }
     .modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
     .modal-title { font-size: 1.2rem; font-weight: 800; }
     .close-btn { background: none; border: none; font-size: 1.2rem; cursor: pointer; color: #64748b; }
+    .tool-btn {
+      background: #ffffff; border: 1px solid #cbd5e1; border-radius: 4px;
+      padding: 4px 10px; font-size: 0.82rem; font-weight: 700; cursor: pointer; color: #334155;
+      transition: all 0.15s ease; outline: none;
+    }
+    .tool-btn:hover { background: #e2e8f0; color: #0f172a; border-color: #94a3b8; }
 
     @media (max-width: 900px) {
       .sidebar { width: 70px; padding: 16px 8px; }
@@ -454,33 +461,146 @@
     </div>
   </div>
 
-  <!-- BLOG MODAL -->
+  <!-- BLOG MODAL (SHOPIFY STYLE RICH EDITOR) -->
   <div class="modal-backdrop" id="blogModal">
-    <div class="modal">
+    <div class="modal modal-lg">
       <div class="modal-header">
-        <h3 class="modal-title" id="blogModalTitle">Create Blog Post</h3>
+        <h3 class="modal-title" id="blogModalTitle"><i class="fa-solid fa-newspaper" style="color:#dc2626; margin-right:8px;"></i> Add Blog Post</h3>
         <button class="close-btn" onclick="closeModal('blogModal')">&times;</button>
       </div>
       <form id="blogForm">
-        <div class="form-group">
-          <label class="form-label">Blog Title *</label>
-          <input type="text" id="blogTitle" class="form-input" required />
+        <input type="hidden" id="blogId" />
+
+        <!-- Row 1: Title, Category, Visibility -->
+        <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 14px;">
+          <div class="form-group">
+            <label class="form-label">Blog Title *</label>
+            <input type="text" id="blogTitle" class="form-input" placeholder="e.g. Complete DPF Cleaning & Maintenance Guide 2026" required oninput="updateSeoPreview()" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Category</label>
+            <input type="text" id="blogCategory" class="form-input" placeholder="e.g. DPF Technical Guides" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Visibility</label>
+            <select id="blogVisibility" class="form-select">
+              <option value="visible">Visible</option>
+              <option value="hidden">Hidden</option>
+            </select>
+          </div>
         </div>
-        <div class="form-group">
-          <label class="form-label">Category</label>
-          <input type="text" id="blogCategory" class="form-input" placeholder="DPF Guides" />
+
+        <!-- RICH TEXT CONTENT EDITOR WITH TOOLBAR ("style chngng options") -->
+        <div class="form-group" style="margin-top: 10px;">
+          <label class="form-label">Blog Content &amp; Description * (Rich Formatting Toolbar)</label>
+          <div class="editor-toolbar" style="background:#f1f5f9; border:1px solid #cbd5e1; border-bottom:none; border-top-left-radius:8px; border-top-right-radius:8px; padding:8px 12px; display:flex; flex-wrap:wrap; gap:6px; align-items:center;">
+            <button type="button" class="tool-btn" onclick="execCmd('bold')" title="Bold"><i class="fa-solid fa-bold"></i></button>
+            <button type="button" class="tool-btn" onclick="execCmd('italic')" title="Italic"><i class="fa-solid fa-italic"></i></button>
+            <button type="button" class="tool-btn" onclick="execCmd('underline')" title="Underline"><i class="fa-solid fa-underline"></i></button>
+            <span style="color:#cbd5e1;">|</span>
+            <button type="button" class="tool-btn" onclick="execCmd('formatBlock', '<h2>')" title="Heading 2">H2</button>
+            <button type="button" class="tool-btn" onclick="execCmd('formatBlock', '<h3>')" title="Heading 3">H3</button>
+            <button type="button" class="tool-btn" onclick="execCmd('formatBlock', '<p>')" title="Paragraph">P</button>
+            <span style="color:#cbd5e1;">|</span>
+            <button type="button" class="tool-btn" onclick="execCmd('insertUnorderedList')" title="Bullet List"><i class="fa-solid fa-list-ul"></i></button>
+            <button type="button" class="tool-btn" onclick="execCmd('insertOrderedList')" title="Numbered List"><i class="fa-solid fa-list-ol"></i></button>
+            <span style="color:#cbd5e1;">|</span>
+            <label title="Text Color" style="cursor:pointer; display:inline-flex; align-items:center; gap:4px; font-size:0.8rem; font-weight:700; color:#475569;">
+              <i class="fa-solid fa-palette"></i>
+              <input type="color" onchange="execCmd('foreColor', this.value)" style="width:24px; height:24px; border:none; background:none; cursor:pointer;" />
+            </label>
+            <button type="button" class="tool-btn" onclick="insertLinkPrompt()" title="Insert Link"><i class="fa-solid fa-link"></i></button>
+            <button type="button" class="tool-btn" onclick="insertImagePrompt()" title="Insert Image"><i class="fa-solid fa-image"></i></button>
+            <button type="button" class="tool-btn" onclick="execCmd('removeFormat')" title="Clear Formatting"><i class="fa-solid fa-eraser"></i></button>
+          </div>
+          <div id="blogEditor" contenteditable="true" style="min-height: 180px; max-height: 320px; overflow-y: auto; background: #ffffff; border: 1px solid #cbd5e1; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; padding: 14px; outline: none; font-size: 0.9rem; line-height: 1.6;" oninput="syncEditorContent()"></div>
+          <textarea id="blogContent" style="display:none;"></textarea>
         </div>
+
+        <!-- Excerpt -->
         <div class="form-group">
-          <label class="form-label">Excerpt</label>
-          <textarea id="blogExcerpt" class="form-textarea" rows="2"></textarea>
+          <label class="form-label">Excerpt / Post Summary</label>
+          <textarea id="blogExcerpt" class="form-textarea" rows="2" placeholder="Brief summary to display on the blog listing card..." oninput="updateSeoPreview()"></textarea>
         </div>
-        <div class="form-group">
-          <label class="form-label">Full Content *</label>
-          <textarea id="blogContent" class="form-textarea" rows="6" required></textarea>
+
+        <!-- IMAGES SECTION (Main + Reference Images) -->
+        <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:16px; margin-bottom:18px;">
+          <h4 style="font-size:0.95rem; font-weight:800; color:#0f172a; margin-bottom:12px;"><i class="fa-solid fa-images" style="color:#dc2626; margin-right:6px;"></i> Main &amp; Reference Images</h4>
+
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
+            <!-- Main Featured Image -->
+            <div>
+              <label class="form-label">Main Featured Image (Cloudinary Upload)</label>
+              <div style="display:flex; gap:8px;">
+                <input type="text" id="blogFeaturedImage" class="form-input" placeholder="https://res.cloudinary.com/..." />
+                <label class="btn btn-outline" style="cursor:pointer; white-space:nowrap;">
+                  <i class="fa-solid fa-upload"></i> Upload
+                  <input type="file" accept="image/*" style="display:none;" onchange="uploadImage(this, 'blogFeaturedImage', 'blogMainImgPreviewContainer')" />
+                </label>
+              </div>
+              <div id="blogMainImgPreviewContainer" style="margin-top:8px;">
+                <img id="blogMainImgPreview" src="/images/bg.webp" style="max-height:80px; border-radius:6px; border:1px solid #cbd5e1;" />
+              </div>
+            </div>
+
+            <!-- Reference Images -->
+            <div>
+              <label class="form-label">Reference Images &amp; Technical Diagrams</label>
+              <div style="display:flex; gap:8px;">
+                <input type="text" id="newRefImgUrl" class="form-input" placeholder="Paste image URL..." />
+                <label class="btn btn-outline" style="cursor:pointer; white-space:nowrap;" title="Upload Image">
+                  <i class="fa-solid fa-upload"></i> Upload
+                  <input type="file" accept="image/*" style="display:none;" onchange="uploadRefImageFile(this)" />
+                </label>
+                <button type="button" class="btn btn-primary" onclick="addRefImageUrl()" style="width:auto;"><i class="fa-solid fa-plus"></i></button>
+              </div>
+              <div id="refImagesList" style="display:flex; flex-wrap:wrap; gap:8px; margin-top:8px;"></div>
+            </div>
+          </div>
         </div>
+
+        <!-- SEO & META SECTION -->
+        <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:16px; margin-bottom:18px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+            <h4 style="font-size:0.95rem; font-weight:800; color:#0f172a;"><i class="fa-solid fa-magnifying-glass" style="color:#2563eb; margin-right:6px;"></i> Search Engine Listing (SEO &amp; Meta)</h4>
+            <span style="font-size:0.75rem; color:#64748b;">Live Google Preview</span>
+          </div>
+
+          <!-- Google SERP Live Preview Box -->
+          <div style="background:#ffffff; border:1px solid #cbd5e1; border-radius:8px; padding:12px 16px; margin-bottom:14px;">
+            <div id="serpUrl" style="font-size:0.75rem; color:#202124;">hiquality.com › blog › <span id="serpSlug">post-title-slug</span></div>
+            <div id="serpTitle" style="font-size:1.05rem; color:#1a0dab; font-weight:600; text-decoration:underline; margin:2px 0;">Blog Title Preview...</div>
+            <div id="serpDesc" style="font-size:0.82rem; color:#4d5156; line-height:1.4;">Add meta description to see how your article will look on Google search results...</div>
+          </div>
+
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:14px;">
+            <div class="form-group" style="margin:0;">
+              <label class="form-label">Meta Title (SEO Title)</label>
+              <input type="text" id="blogSeoTitle" class="form-input" placeholder="Google Search Title..." oninput="updateSeoPreview()" />
+            </div>
+            <div class="form-group" style="margin:0;">
+              <label class="form-label">SEO Keywords (comma separated)</label>
+              <input type="text" id="blogKeywords" class="form-input" placeholder="DPF cleaning, silencer manufacturing..." />
+            </div>
+          </div>
+          <div class="form-group" style="margin-top:10px; margin-bottom:0;">
+            <label class="form-label">Meta Description (SEO Description)</label>
+            <textarea id="blogSeoDesc" class="form-textarea" rows="2" placeholder="Search engine description previewed on Google search results..." oninput="updateSeoPreview()"></textarea>
+          </div>
+        </div>
+
+        <!-- DYNAMIC ARTICLE FAQs SECTION -->
+        <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:16px; margin-bottom:18px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+            <h4 style="font-size:0.95rem; font-weight:800; color:#0f172a;"><i class="fa-solid fa-circle-question" style="color:#dc2626; margin-right:6px;"></i> Article FAQs (Shown on Blog Inner Page)</h4>
+            <button type="button" class="btn btn-outline btn-sm" onclick="addFaqRow()"><i class="fa-solid fa-plus"></i> Add Question</button>
+          </div>
+          <div id="faqContainer" style="display:flex; flex-direction:column; gap:10px;"></div>
+        </div>
+
         <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:24px;">
           <button type="button" class="btn btn-outline" onclick="closeModal('blogModal')">Cancel</button>
-          <button type="submit" class="btn btn-primary" style="width:auto;">Publish Blog</button>
+          <button type="submit" class="btn btn-primary" style="width:auto;"><i class="fa-solid fa-paper-plane"></i> Save Blog Post</button>
         </div>
       </form>
     </div>
@@ -629,15 +749,26 @@
       const tbody = document.querySelector('#blogsTable tbody');
       tbody.innerHTML = blogsData.map(b => `
         <tr>
-          <td><strong>${b.title}</strong></td>
+          <td>
+            <div style="display:flex; align-items:center; gap:12px;">
+              <img src="${b.featuredImage || '/images/bg.webp'}" style="width:44px; height:44px; border-radius:6px; object-fit:cover; border:1px solid #e2e8f0;" />
+              <div>
+                <strong style="color:#0f172a;">${b.title}</strong>
+                <div style="font-size:0.75rem; color:#64748b; margin-top:2px;">/blog/${b.slug || b.id}</div>
+              </div>
+            </div>
+          </td>
           <td>${b.category || 'General'}</td>
           <td>${new Date(b.publishDate || Date.now()).toLocaleDateString()}</td>
           <td><span class="badge ${b.visibility === 'visible' ? 'badge-success' : 'badge-warning'}">${b.visibility}</span></td>
           <td>
-            <button class="btn btn-danger btn-sm" onclick="deleteBlog('${b.id || b._id}')"><i class="fa-solid fa-trash"></i></button>
+            <div style="display:flex; gap:8px;">
+              <button class="btn btn-outline btn-sm" onclick="editBlog('${b.id || b._id}')" title="Edit Blog"><i class="fa-solid fa-pen-to-square"></i> Edit</button>
+              <button class="btn btn-danger btn-sm" onclick="deleteBlog('${b.id || b._id}')" title="Delete Blog"><i class="fa-solid fa-trash"></i></button>
+            </div>
           </td>
         </tr>
-      `).join('');
+      `).join('') || '<tr><td colspan="5">No blog posts found. Click "+ Create Blog Post" to add your first article!</td></tr>';
     }
 
     async function fetchLeads() {
@@ -770,29 +901,224 @@
       } catch (err) { alert('Failed to delete product'); }
     }
 
+    // ==========================================
+    // SHOPIFY-STYLE BLOG RICH EDITOR JS ENGINE
+    // ==========================================
+    let currentRefImages = [];
+    let currentFaqs = [];
+
+    // Rich Text Editor Commands ("style chngng options")
+    function execCmd(command, value = null) {
+      document.execCommand(command, false, value);
+      syncEditorContent();
+    }
+
+    function syncEditorContent() {
+      const editorHtml = document.getElementById('blogEditor').innerHTML;
+      document.getElementById('blogContent').value = editorHtml;
+    }
+
+    function insertLinkPrompt() {
+      const url = prompt('Enter link URL (e.g. https://hiquality.com/services):');
+      if (url) execCmd('createLink', url);
+    }
+
+    function insertImagePrompt() {
+      const url = prompt('Enter image URL (or upload image using Cloudinary button below):');
+      if (url) execCmd('insertImage', url);
+    }
+
+    function updateSeoPreview() {
+      const title = document.getElementById('blogTitle').value || 'Blog Title Preview';
+      const seoTitle = document.getElementById('blogSeoTitle').value || title;
+      const excerpt = document.getElementById('blogExcerpt').value || '';
+      const seoDesc = document.getElementById('blogSeoDesc').value || excerpt || 'Add meta description to see how your article will look on Google search results...';
+      const slug = title.toLowerCase().trim().replace(/[\s\W-]+/g, '-');
+
+      document.getElementById('serpTitle').innerText = seoTitle;
+      document.getElementById('serpDesc').innerText = seoDesc;
+      document.getElementById('serpSlug').innerText = slug || 'post-title-slug';
+    }
+
+    // Reference Images Management
+    function renderRefImages() {
+      const container = document.getElementById('refImagesList');
+      container.innerHTML = currentRefImages.map((img, index) => `
+        <div style="position:relative; width:70px; height:70px; border-radius:6px; overflow:hidden; border:1px solid #cbd5e1;">
+          <img src="${img}" style="width:100%; height:100%; object-fit:cover;" />
+          <button type="button" onclick="removeRefImage(${index})" style="position:absolute; top:2px; right:2px; background:rgba(220,38,38,0.85); color:#fff; border:none; border-radius:50%; width:18px; height:18px; font-size:10px; cursor:pointer; display:flex; align-items:center; justify-content:center;">&times;</button>
+        </div>
+      `).join('');
+    }
+
+    function addRefImageUrl() {
+      const input = document.getElementById('newRefImgUrl');
+      const url = input.value.trim();
+      if (url) {
+        currentRefImages.push(url);
+        input.value = '';
+        renderRefImages();
+      }
+    }
+
+    async function uploadRefImageFile(fileInput) {
+      const file = fileInput.files[0];
+      if (!file) return;
+      const formData = new FormData();
+      formData.append('file', file);
+      try {
+        const res = await fetch(`${API_BASE}/upload`, { method: 'POST', body: formData });
+        const data = await res.json();
+        if (data.success) {
+          currentRefImages.push(data.url);
+          renderRefImages();
+          alert('Reference image uploaded!');
+        } else alert(data.error || 'Upload failed');
+      } catch (err) { alert('Image upload failed'); }
+    }
+
+    function removeRefImage(index) {
+      currentRefImages.splice(index, 1);
+      renderRefImages();
+    }
+
+    // Dynamic Article FAQs Management
+    function renderFaqs() {
+      const container = document.getElementById('faqContainer');
+      if (currentFaqs.length === 0) {
+        container.innerHTML = '<div style="font-size:0.8rem; color:#64748b; font-style:italic;">No FAQs added yet. Click "+ Add Question" to add questions &amp; answers to this article.</div>';
+        return;
+      }
+      container.innerHTML = currentFaqs.map((faq, index) => `
+        <div style="background:#ffffff; border:1px solid #cbd5e1; border-radius:8px; padding:12px; position:relative;">
+          <button type="button" onclick="removeFaqRow(${index})" style="position:absolute; top:10px; right:10px; background:#fef2f2; color:#ef4444; border:1px solid #fecaca; border-radius:6px; padding:4px 8px; font-size:0.75rem; cursor:pointer; font-weight:700;"><i class="fa-solid fa-trash"></i> Remove</button>
+          <div class="form-group" style="margin-bottom:8px; padding-right:80px;">
+            <label class="form-label" style="font-size:0.75rem;">Question ${index + 1}</label>
+            <input type="text" class="form-input" value="${escapeHtml(faq.question)}" oninput="currentFaqs[${index}].question = this.value" placeholder="e.g. How often should a DPF be cleaned?" />
+          </div>
+          <div class="form-group" style="margin:0;">
+            <label class="form-label" style="font-size:0.75rem;">Answer</label>
+            <textarea class="form-textarea" rows="2" oninput="currentFaqs[${index}].answer = this.value" placeholder="Detailed answer...">${escapeHtml(faq.answer)}</textarea>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function escapeHtml(str) {
+      return (str || '').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    function addFaqRow() {
+      currentFaqs.push({ question: '', answer: '' });
+      renderFaqs();
+    }
+
+    function removeFaqRow(index) {
+      currentFaqs.splice(index, 1);
+      renderFaqs();
+    }
+
+    // Modal Open & Edit Handlers
     function openBlogModal() {
       document.getElementById('blogForm').reset();
+      document.getElementById('blogId').value = '';
+      document.getElementById('blogEditor').innerHTML = '';
+      document.getElementById('blogContent').value = '';
+      document.getElementById('blogFeaturedImage').value = '';
+      document.getElementById('blogMainImgPreview').src = '/images/bg.webp';
+      currentRefImages = [];
+      currentFaqs = [];
+      renderRefImages();
+      renderFaqs();
+      updateSeoPreview();
+      document.getElementById('blogModalTitle').innerHTML = '<i class="fa-solid fa-newspaper" style="color:#dc2626; margin-right:8px;"></i> Add Blog Post';
+      document.getElementById('blogModal').classList.add('show');
+    }
+
+    function editBlog(id) {
+      const b = blogsData.find(item => item.id === id || item._id === id);
+      if (!b) return;
+
+      document.getElementById('blogId').value = b.id || b._id;
+      document.getElementById('blogTitle').value = b.title || '';
+      document.getElementById('blogCategory').value = b.category || '';
+      document.getElementById('blogVisibility').value = b.visibility || 'visible';
+      document.getElementById('blogExcerpt').value = b.excerpt || '';
+      document.getElementById('blogFeaturedImage').value = b.featuredImage || '';
+      document.getElementById('blogMainImgPreview').src = b.featuredImage || '/images/bg.webp';
+
+      document.getElementById('blogSeoTitle').value = b.seoTitle || b.title || '';
+      document.getElementById('blogSeoDesc').value = b.seoDescription || b.excerpt || '';
+      document.getElementById('blogKeywords').value = b.keywords || '';
+
+      const content = b.content || '';
+      document.getElementById('blogEditor').innerHTML = content;
+      document.getElementById('blogContent').value = content;
+
+      currentRefImages = Array.isArray(b.referenceImages) ? [...b.referenceImages] : [];
+      currentFaqs = Array.isArray(b.faqs) ? JSON.parse(JSON.stringify(b.faqs)) : [];
+
+      renderRefImages();
+      renderFaqs();
+      updateSeoPreview();
+
+      document.getElementById('blogModalTitle').innerHTML = '<i class="fa-solid fa-pen-to-square" style="color:#2563eb; margin-right:8px;"></i> Edit Blog Post';
       document.getElementById('blogModal').classList.add('show');
     }
 
     document.getElementById('blogForm').addEventListener('submit', async (e) => {
       e.preventDefault();
+      syncEditorContent();
+
+      const id = document.getElementById('blogId').value;
       const title = document.getElementById('blogTitle').value;
       const category = document.getElementById('blogCategory').value;
+      const visibility = document.getElementById('blogVisibility').value;
       const excerpt = document.getElementById('blogExcerpt').value;
       const content = document.getElementById('blogContent').value;
+      const featuredImage = document.getElementById('blogFeaturedImage').value;
+
+      const seoTitle = document.getElementById('blogSeoTitle').value;
+      const seoDescription = document.getElementById('blogSeoDesc').value;
+      const keywords = document.getElementById('blogKeywords').value;
+
+      if (!title || !content) {
+        alert('Title and Content are required!');
+        return;
+      }
+
+      const payload = {
+        title,
+        category,
+        visibility,
+        excerpt,
+        content,
+        featuredImage,
+        referenceImages: currentRefImages,
+        seoTitle,
+        seoDescription,
+        keywords,
+        faqs: currentFaqs.filter(f => f.question && f.question.trim())
+      };
+
+      const url = id ? `${API_BASE}/blogs/${id}` : `${API_BASE}/blogs`;
+      const method = id ? 'PUT' : 'POST';
 
       try {
-        const res = await fetch(`${API_BASE}/blogs`, {
-          method: 'POST',
+        const res = await fetch(url, {
+          method,
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ title, category, excerpt, content })
+          body: JSON.stringify(payload)
         });
-        if ((await res.json()).success) {
+        const data = await res.json();
+        if (data.success) {
           closeModal('blogModal');
           fetchBlogs();
+          alert(id ? 'Blog post updated successfully!' : 'Blog post published successfully!');
+        } else {
+          alert(data.error || 'Failed to save blog post');
         }
-      } catch (err) { alert('Error creating blog'); }
+      } catch (err) { alert('Error saving blog post'); }
     });
 
     async function deleteBlog(id) {

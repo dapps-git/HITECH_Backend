@@ -386,10 +386,21 @@ app.get('/api/blogs', (req, res) => {
   res.json({ success: true, count: blogs.length, blogs });
 });
 
+// GET /api/blogs/:idOrSlug -> Fetch single blog post by ID or Slug
+app.get('/api/blogs/:idOrSlug', (req, res) => {
+  const { idOrSlug } = req.params;
+  const data = getDbData();
+  const blog = (data.blogs || []).find(b => b.id === idOrSlug || b._id === idOrSlug || b.slug === idOrSlug);
+  if (!blog) {
+    return res.status(404).json({ success: false, error: 'Blog post not found' });
+  }
+  res.json({ success: true, blog });
+});
+
 // POST /api/blogs -> Create new blog post
 app.post('/api/blogs', (req, res) => {
   try {
-    const { title, content, excerpt, featuredImage, visibility, seoTitle, seoDescription, keywords, category, faqs } = req.body;
+    const { title, content, excerpt, featuredImage, referenceImages, visibility, seoTitle, seoDescription, keywords, category, faqs } = req.body;
     if (!title || !content) {
       return res.status(400).json({ success: false, error: 'Title and content are required' });
     }
@@ -404,8 +415,9 @@ app.post('/api/blogs', (req, res) => {
       title,
       slug,
       content,
-      excerpt: excerpt || title,
+      excerpt: excerpt || title.substring(0, 160),
       featuredImage: featuredImage || '/images/bg.webp',
+      referenceImages: Array.isArray(referenceImages) ? referenceImages : [],
       visibility: visibility || 'visible',
       publishDate: new Date().toISOString(),
       seoTitle: seoTitle || title,
@@ -437,7 +449,9 @@ app.put('/api/blogs/:id', (req, res) => {
 
     data.blogs[index] = {
       ...data.blogs[index],
-      ...req.body
+      ...req.body,
+      id: data.blogs[index].id,
+      _id: data.blogs[index]._id
     };
 
     saveDbData(data);
