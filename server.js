@@ -39,6 +39,25 @@ app.get(['/admin', '/admin/*'], (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'admin', 'index.html'));
 });
 
+// Debug route to inspect cPanel filesystem paths
+app.get('/api/debug', (req, res) => {
+  const adminPath = path.join(__dirname, 'public', 'admin', 'index.html');
+  const adminExists = fs.existsSync(adminPath);
+  let publicFiles = [];
+  try {
+    publicFiles = fs.readdirSync(path.join(__dirname, 'public'));
+  } catch(e) { publicFiles = e.message; }
+
+  res.json({
+    dirname: __dirname,
+    adminPath,
+    adminExists,
+    publicFiles,
+    reqUrl: req.url,
+    originalUrl: req.originalUrl
+  });
+});
+
 const dbPath = path.join(__dirname, 'data', 'db.json');
 
 // Helper to read database JSON
