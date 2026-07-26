@@ -487,10 +487,13 @@
   </div>
 
   <script>
-    const basePath = window.location.pathname.includes('/admin')
-      ? window.location.pathname.substring(0, window.location.pathname.indexOf('/admin'))
-      : '';
-    const API_BASE = (basePath ? basePath : '') + '/api';
+    // Detect deployment subfolder (e.g. /hiquality/admin → API at /hiquality/api)
+    // Strip trailing /admin segment to get the true base path
+    const rawPath = window.location.pathname;
+    const adminIdx = rawPath.indexOf('/admin');
+    const basePath = adminIdx > 0 ? rawPath.substring(0, adminIdx) : '';
+    const API_BASE = basePath + '/api';
+    console.log('[Admin] pathname:', rawPath, '| API_BASE:', API_BASE);
     let servicesData = [];
     let productsData = [];
     let blogsData = [];

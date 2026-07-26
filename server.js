@@ -22,9 +22,12 @@ app.use(cors());
 app.use(bodyParser.json({ limit: '10mb' }));
 app.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }));
 
-// Subfolder base path middleware for cPanel deployments (e.g. /hiquality)
+// Subfolder base path middleware for cPanel deployments
+// Strips /hiquality/admin or /hiquality prefix so all /api/* routes work correctly
 app.use((req, res, next) => {
-  if (req.url.startsWith('/hiquality')) {
+  if (req.url.startsWith('/hiquality/admin')) {
+    req.url = req.url.replace('/hiquality/admin', '') || '/';
+  } else if (req.url.startsWith('/hiquality')) {
     req.url = req.url.replace('/hiquality', '') || '/';
   }
   next();
