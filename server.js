@@ -99,22 +99,14 @@ function saveDbData(data) {
   }
 }
 
-// Health Check Route (Returns text/html for cPanel Phusion Passenger compatibility)
-app.get('/', (req, res) => {
+// Root & Admin Route Handler - Serves Admin Portal UI directly
+app.get(['/', '/admin', '/admin/*'], (req, res) => {
+  const adminPath = path.join(__dirname, 'public', 'admin', 'index.html');
+  if (fs.existsSync(adminPath)) {
+    return res.sendFile(adminPath);
+  }
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
-  res.status(200).send(`
-    <!DOCTYPE html>
-    <html lang="en">
-    <head><meta charset="UTF-8"><title>Hi-Quality API & Admin</title></head>
-    <body style="font-family: sans-serif; text-align: center; padding: 50px; background: #f8fafc;">
-      <h1 style="color: #dc2626;">Hi-Quality Silencers Express API</h1>
-      <p style="color: #475569;">Server is Online &amp; Running Successfully!</p>
-      <a href="/admin" style="display: inline-block; background: #dc2626; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold; margin-top: 15px;">
-        Open Admin Portal →
-      </a>
-    </body>
-    </html>
-  `);
+  res.status(200).send('<h1>Hi-Quality API Server Online</h1>');
 });
 
 app.get('/api/health', (req, res) => {
