@@ -520,13 +520,30 @@
           <textarea id="svcFullDesc" class="form-textarea" rows="4" placeholder="Full detailed description shown on the service inner page..."></textarea>
         </div>
         <div class="form-group">
-          <label class="form-label">Inner Page Image URL</label>
-          <input type="url" id="svcImage" class="form-input" placeholder="https://... or /images/your-image.jpg" />
-          <small style="color:#6b7280; font-size:0.72rem; margin-top:4px; display:block;">Upload image to /public/images/ folder then paste the path here (e.g. /images/service-dpf-machine.jpg)</small>
+          <label class="form-label">Inner Page Image</label>
+          <div style="display:flex; gap:8px;">
+            <input type="text" id="svcImage" class="form-input" placeholder="https://res.cloudinary.com/... or upload file" />
+            <label class="btn btn-outline" style="cursor:pointer; white-space:nowrap;">
+              <i class="fa-solid fa-upload"></i> Upload
+              <input type="file" accept="image/*" style="display:none;" onchange="uploadImage(this, 'svcImage', 'svcImagePreview')" />
+            </label>
+          </div>
+          <div id="svcImagePreview" style="margin-top:8px; display:none;">
+            <img src="" style="height:60px; border-radius:6px; border:1px solid #e2e8f0; object-fit:contain;" />
+          </div>
         </div>
         <div class="form-group">
-          <label class="form-label">Before/After Image URL (optional)</label>
-          <input type="url" id="svcBeforeAfterImage" class="form-input" placeholder="https://... or /images/your-before-after.jpg" />
+          <label class="form-label">Before/After Image (optional)</label>
+          <div style="display:flex; gap:8px;">
+            <input type="text" id="svcBeforeAfterImage" class="form-input" placeholder="https://res.cloudinary.com/... or upload file" />
+            <label class="btn btn-outline" style="cursor:pointer; white-space:nowrap;">
+              <i class="fa-solid fa-upload"></i> Upload
+              <input type="file" accept="image/*" style="display:none;" onchange="uploadImage(this, 'svcBeforeAfterImage', 'svcBeforeAfterPreview')" />
+            </label>
+          </div>
+          <div id="svcBeforeAfterPreview" style="margin-top:8px; display:none;">
+            <img src="" style="height:60px; border-radius:6px; border:1px solid #e2e8f0; object-fit:contain;" />
+          </div>
         </div>
         <div class="form-group">
           <label class="form-label">Icon</label>
@@ -893,6 +910,11 @@
     function openServiceModal(id = null) {
       document.getElementById('serviceForm').reset();
       document.getElementById('svcId').value = '';
+      // Reset image previews
+      const imgPrev = document.getElementById('svcImagePreview');
+      if (imgPrev) { imgPrev.style.display = 'none'; imgPrev.querySelector('img').src = ''; }
+      const baPrev = document.getElementById('svcBeforeAfterPreview');
+      if (baPrev) { baPrev.style.display = 'none'; baPrev.querySelector('img').src = ''; }
       document.getElementById('serviceModalTitle').innerText = 'Add Dynamic Service';
       document.getElementById('serviceModal').classList.add('show');
     }
@@ -903,8 +925,27 @@
       document.getElementById('svcId').value = s.id || s._id;
       document.getElementById('svcTitle').value = s.title || '';
       document.getElementById('svcDesc').value = s.desc || '';
+      document.getElementById('svcFullDesc').value = s.fullDesc || '';
       document.getElementById('svcIcon').value = s.icon || 'FaWrench';
       document.getElementById('svcOrder').value = s.order || 1;
+
+      // Restore image fields & previews
+      const imgUrl = s.image || '';
+      document.getElementById('svcImage').value = imgUrl;
+      const imgPrev = document.getElementById('svcImagePreview');
+      if (imgPrev) {
+        if (imgUrl) { imgPrev.querySelector('img').src = imgUrl; imgPrev.style.display = 'block'; }
+        else imgPrev.style.display = 'none';
+      }
+
+      const baUrl = s.beforeAfterImage || '';
+      document.getElementById('svcBeforeAfterImage').value = baUrl;
+      const baPrev = document.getElementById('svcBeforeAfterPreview');
+      if (baPrev) {
+        if (baUrl) { baPrev.querySelector('img').src = baUrl; baPrev.style.display = 'block'; }
+        else baPrev.style.display = 'none';
+      }
+
       document.getElementById('serviceModalTitle').innerText = 'Edit Service';
       document.getElementById('serviceModal').classList.add('show');
     }
@@ -914,8 +955,11 @@
       const id = document.getElementById('svcId').value;
       const title = document.getElementById('svcTitle').value;
       const desc = document.getElementById('svcDesc').value;
+      const fullDesc = document.getElementById('svcFullDesc').value;
       const icon = document.getElementById('svcIcon').value;
       const order = Number(document.getElementById('svcOrder').value);
+      const image = document.getElementById('svcImage').value;
+      const beforeAfterImage = document.getElementById('svcBeforeAfterImage').value;
 
       const url = id ? `${API_BASE}/services/${id}` : `${API_BASE}/services`;
       const method = id ? 'PUT' : 'POST';
@@ -924,12 +968,13 @@
         const res = await fetch(url, {
           method,
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ title, desc, icon, order })
+          body: JSON.stringify({ title, desc, fullDesc, icon, order, image, beforeAfterImage })
         });
         const data = await res.json();
         if (data.success) {
           closeModal('serviceModal');
           fetchServices();
+          alert(id ? 'Service updated successfully!' : 'Service added successfully!');
         } else alert(data.error || 'Failed to save service');
       } catch (err) { alert('Error saving service'); }
     });
@@ -1168,6 +1213,11 @@
       const file = fileInput.files[0];
       if (!file) return;
 
+      // Show loading state on the parent label button
+      const labelBtn = fileInput.closest('label');
+      const originalHTML = labelBtn ? labelBtn.innerHTML : '';
+      if (labelBtn) labelBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Uploading...';
+
       const formData = new FormData();
       formData.append('file', file);
 
@@ -1181,12 +1231,20 @@
           document.getElementById(targetInputId).value = data.url;
           const preview = document.getElementById(previewContainerId);
           if (preview) {
-            preview.querySelector('img').src = data.url;
+            const img = preview.tagName === 'IMG' ? preview : preview.querySelector('img');
+            if (img) img.src = data.url;
             preview.style.display = 'block';
           }
-          alert('Image uploaded successfully!');
-        } else alert(data.error || 'Upload failed');
-      } catch (err) { alert('Image upload failed'); }
+          if (labelBtn) labelBtn.innerHTML = '<i class="fa-solid fa-check"></i> Uploaded!';
+          setTimeout(() => { if (labelBtn) labelBtn.innerHTML = originalHTML; }, 2000);
+        } else {
+          alert(data.error || 'Upload failed');
+          if (labelBtn) labelBtn.innerHTML = originalHTML;
+        }
+      } catch (err) {
+        alert('Image upload failed. Please try again.');
+        if (labelBtn) labelBtn.innerHTML = originalHTML;
+      }
     }
 
     function closeModal(modalId) {
