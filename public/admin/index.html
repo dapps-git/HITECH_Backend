@@ -886,7 +886,7 @@
         <tr>
           <td>
             <div style="display:flex; align-items:center; gap:10px;">
-              <img src="${b.featuredImage || '/images/bg.webp'}" style="width:38px; height:38px; border-radius:6px; object-fit:cover; border:1px solid #e2e8f0;" />
+              <img src="${b.featuredImage || '/images/dpf_fault_codes_guide_v2.jpg'}" onerror="this.onerror=null;this.src='https://res.cloudinary.com/zkgbtcke/image/upload/v1785730447/hitech_products/novfukencmlqdsrroqox.webp';" style="width:38px; height:38px; border-radius:6px; object-fit:cover; border:1px solid #e2e8f0;" />
               <div>
                 <strong style="color:#0f172a;">${b.title}</strong>
                 <div style="font-size:0.72rem; color:#64748b;">/blog/${b.slug || bid}</div>
@@ -1132,8 +1132,44 @@
     }
 
     function insertImagePrompt() {
-      const url = prompt('Enter image URL:');
-      if (url) execCmd('insertImage', url);
+      let fileInput = document.getElementById('editorImgInput');
+      if (!fileInput) {
+        fileInput = document.createElement('input');
+        fileInput.type = 'file';
+        fileInput.id = 'editorImgInput';
+        fileInput.accept = 'image/*';
+        fileInput.style.display = 'none';
+        fileInput.onchange = function() { uploadEditorImage(this); };
+        document.body.appendChild(fileInput);
+      }
+      fileInput.click();
+    }
+
+    async function uploadEditorImage(fileInput) {
+      const file = fileInput.files[0];
+      if (!file) return;
+
+      const formData = new FormData();
+      formData.append('file', file);
+
+      try {
+        const res = await fetch(`${API_BASE}/upload`, {
+          method: 'POST',
+          body: formData
+        });
+        const data = await res.json();
+        if (data.success && data.url) {
+          const imgHtml = `<p><img src="${data.url}" alt="Blog Image" style="max-width:100%; height:auto; border-radius:4px; margin:8px 0;" /></p>`;
+          document.execCommand('insertHTML', false, imgHtml);
+          syncEditorContent();
+        } else {
+          alert(data.error || 'Failed to upload image');
+        }
+      } catch (err) {
+        alert('Image upload failed');
+      } finally {
+        fileInput.value = '';
+      }
     }
 
     function updateSeoPreview() {

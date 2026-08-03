@@ -6,8 +6,8 @@
       "image": "/images/prod_passenger_car.png",
       "category": "Passenger Cars",
       "shortDesc": "High performance OEM specification silencers for all passenger cars. Built for durability.",
-      "fullDesc": "High performance OEM specification silencer engineered for passenger cars. Features heavy-duty galvanised & stainless steel construction, precision acoustic tuning, and minimum 10-year service life.",
-      "spec": "Galvanised / Stainless Steel 1.6mm"
+      "fullDesc": "High performance OEM specification silencer engineered for passenger cars. Features heavy-duty galvanised sheets or pipe construction, precision acoustic tuning, and minimum 10-year service life.",
+      "spec": "1.6mm Galvanised Sheets or Pipe"
     },
     {
       "id": "prod-2",
@@ -16,7 +16,7 @@
       "category": "SUV & Pickup",
       "shortDesc": "Robust silencers designed for SUVs and pickup trucks for powerful performance.",
       "fullDesc": "Robust silencers specially engineered for SUVs and 4x4 pickup trucks. Designed for high exhaust flow, maximum backpressure reduction, and durable performance under extreme driving conditions.",
-      "spec": "Heavy Duty 2.0mm Steel"
+      "spec": "2.0mm Galvanised Sheets or Pipe"
     },
     {
       "id": "prod-3",
@@ -50,7 +50,7 @@
     {
       "id": "svc-1",
       "title": "Professional DPF Restoration",
-      "desc": "4-stage scientific DPF cleaning restoring original exhaust flow & back pressure",
+      "desc": "5-stage scientific DPF cleaning restoring original exhaust flow & back pressure",
       "icon": "FaFilter",
       "link": "#dpf-cleaning",
       "order": 1,
@@ -93,6 +93,64 @@
       "visible": true
     }
   ],
-  "blogs": [],
-  "enquiries": []
+  "blogs": [
+    {
+      "id": "blog-dpf-fault-codes",
+      "_id": "blog-dpf-fault-codes",
+      "title": "Common DPF Fault Codes That Can Often Be Resolved by Professional DPF Restoration",
+      "slug": "common-dpf-fault-codes-resolved-by-professional-restoration",
+      "category": "DPF DIAGNOSTICS",
+      "featuredImage": "/images/dpf_fault_codes_guide_v2.jpg",
+      "excerpt": "Diagnostic guide to common Diesel Particulate Filter (DPF) fault codes. Learn which soot, ash, and pressure error codes can be resolved through professional restoration, and which require sensor or mechanical repairs.",
+      "publishDate": "2026-08-01T12:00:00.000Z",
+      "visibility": "visible",
+      "author": "Hi Quality Silencers Technical Team",
+      "seoTitle": "Common DPF Fault Codes & Professional DPF Restoration Guide",
+      "seoDescription": "Learn which DPF error codes (P2463, P242F, P2458, P24A4, P244B) are resolvable with professional DPF restoration and which indicate sensor or structural faults.",
+      "keywords": "DPF fault codes, P2463 soot accumulation, P242F ash accumulation, P2458 regeneration duration, P24A4 excessive soot, P244B pressure high, DPF restoration Calicut",
+      "content": "<p>When the DPF or Check Engine warning light illuminates on your diesel vehicle dashboard, diagnostic OBD-II scanners report specific fault codes. Understanding these error codes is essential to determine whether your Diesel Particulate Filter can be fully restored to OEM performance through 5-stage scientific cleaning, or if underlying sensor or mechanical repairs are required first.</p><h2>✅ Fault Codes Resolved by Professional DPF Restoration</h2><p>The following fault codes indicate heavy soot, ash, or flow restriction within the filter channels. These issues are directly addressed and typically resolved by our professional hydro-pneumatic restoration and thermal regeneration process:</p><ul><li><strong>✅ P2463 – DPF Soot Accumulation:</strong> Triggered when soot loading exceeds normal passive and active regeneration limits. Restored completely after pneumatic flushing and soot removal.</li><li><strong>✅ P242F – Excessive Ash Accumulation:</strong> Occurs due to non-combustible lubricant ash build-up over time. Resolvable if ash accumulation is within a restorable level and the DPF is not physically damaged.</li><li><strong>✅ P2458 – DPF Regeneration Duration Too Long:</strong> Caused by severe exhaust flow restriction preventing successful regeneration cycles. Restored once normal flow dynamics are re-established.</li><li><strong>✅ P24A4 – Excessive Soot Load:</strong> Indicates high soot volume inside the filter channels. Easily cleared after deep chemical soaking and flushing.</li><li><strong>✅ P244B – DPF Differential Pressure Too High:</strong> Triggered by excessive pressure drop across the filter due to DPF blockage. Resolved once backpressure is normalized.</li></ul><h2>⚠️ Professional DPF Restoration May Not Resolve These Codes</h2><p>Certain fault codes stem from physical substrate damage, catalyst degradation, sensor failures, or external exhaust leaks. DPF cleaning alone will not fix these issues without addressing the root cause:</p><ul><li><strong>❌ P2002 / P2003 – DPF Efficiency Below Threshold:</strong> May be caused by physical DPF damage, catalyst degradation, exhaust leaks, or sensor-related faults. DPF restoration alone may not resolve these codes.</li><li><strong>❌ P244A – DPF Differential Pressure Too Low:</strong> Often caused by a faulty differential pressure sensor, blocked pressure pipes/hoses, or an internally damaged DPF.</li><li><strong>❌ P2452 / P2453 / P2454 / P2455 – Differential Pressure Sensor Circuit Faults:</strong> Differential pressure sensor or wiring faults; DPF cleaning/restoration will not resolve these.</li></ul><h2>🔍 Important Technical Recommendation & Final Inspection</h2><p><strong>Note:</strong> Final diagnosis should always be confirmed using live diagnostic data, differential pressure testing, and a physical DPF inspection before recommending DPF restoration, repair, or replacement.</p><p>DPF restoration is recommended only for structurally serviceable DPFs. Any underlying engine, sensor, or exhaust system faults (such as faulty injectors or EGR valves) should be diagnosed and repaired to prevent repeat DPF blockage.</p>",
+      "faqs": [
+        {
+          "question": "Can P2463 DPF Soot Accumulation code be cleared by DPF restoration?",
+          "answer": "Yes. Code P2463 is directly caused by high soot loading inside the filter. Professional 5-stage DPF restoration removes 98%+ of soot deposits and restores original exhaust backpressure, allowing the ECU to clear the error."
+        },
+        {
+          "question": "Will DPF restoration fix P2452 or P2453 differential pressure sensor codes?",
+          "answer": "No. P2452, P2453, P2454, and P2455 are electrical or sensor circuit faults. The differential pressure sensor or its wiring harness must be diagnosed and replaced by a technician."
+        },
+        {
+          "question": "Is ash accumulation (P242F) cleanable?",
+          "answer": "Yes, provided the ash accumulation is within a restorable level and the ceramic honeycomb filter core is structurally intact without melted or cracked channels."
+        }
+      ]
+    },
+    {
+      "id": "blog-dpf-sensor-pressure-pipe-cleaning",
+      "_id": "blog-dpf-sensor-pressure-pipe-cleaning",
+      "title": "DPF Sensor & Pressure Pipe Cleaning Guidelines",
+      "slug": "dpf-sensor-pressure-pipe-cleaning-guidelines",
+      "category": "DPF MAINTENANCE",
+      "featuredImage": "/images/dpf_sensors_pipes_cleaning_guide.jpg",
+      "excerpt": "Complete cleaning guidelines for DPF sensors (EGT, Oxygen/Lambda) and pressure pipes. Learn safe cleaning procedures, precautions, and how to avoid sensor damage.",
+      "publishDate": "2026-08-01T13:00:00.000Z",
+      "visibility": "visible",
+      "author": "Hi Quality Silencers Technical Team",
+      "seoTitle": "DPF Sensor & Pressure Pipe Cleaning Guidelines",
+      "seoDescription": "Complete guidelines for cleaning DPF sensors and differential pressure pipes safely.",
+      "keywords": "DPF sensor cleaning, pressure pipe cleaning, EGT sensor, oxygen sensor cleaning",
+      "content": "<h2>DPF Sensor & Pressure Pipe Cleaning Guidelines</h2><p>Proper maintenance of DPF sensors and differential pressure pipes is essential to ensure accurate ECU readings, prevent false engine warning lights, and maintain 5-stage scientific DPF restoration efficiency.</p><h3>1. Differential Pressure Pipes & Rubber Hoses</h3><p>Differential pressure pipes measure the pressure differential before and after the DPF ceramic core. Over thousands of kilometers, carbon soot and moisture condense inside these metal pipes, causing severe crusting and false pressure differential readings.</p><ul><li><strong>Inspection:</strong> Check both high-pressure (upstream) and low-pressure (downstream) metal pipes for cracks, severe corrosion, or soot clogging.</li><li><strong>Flushing Procedure:</strong> Disconnect the pressure hoses from the sensor. Flush metal pipes using approved electrical contact cleaner or mild carbon solvent. Use compressed air (at controlled low pressure) to blow out remaining carbon crust and solvent residual.</li><li><strong>Rubber Hose Check:</strong> Inspect connecting rubber hoses for heat degradation, hardening, or micro-cracks. Worn hoses will leak pressure and trigger false P2452/P2453 error codes.</li></ul><h3>2. Exhaust Gas Temperature (EGT) Sensors</h3><p>EGT sensors measure temperature upfront and behind the DPF to ensure safe regeneration temperatures (550°C – 650°C). Heavy carbon coating on the sensor tip insulates the thermocouple element, causing delayed ECU temperature response.</p><ul><li><strong>Safe Cleaning Technique:</strong> Gently clean the sensor probe tip using specialized electrical contact cleaner or alcohol-based solvent.</li><li><strong>PRECAUTION:</strong> DO NOT use abrasive wire brushes, sand paper, or harsh steel tools on sensor tips, as this will destroy the microscopic ceramic insulation and internal thermocouple element.</li></ul><h3>3. Oxygen (Lambda) & NOx Sensors</h3><p>Upstream oxygen and NOx sensors calculate fuel-air ratio and emission levels before entering the DPF system.</p><ul><li>Carefully unclip the sensor wiring connector before unscrewing the hex body.</li><li>Use dedicated sensor spray cleaner; never soak electrical connectors in liquid solvents.</li></ul><h3>4. Post-Cleaning Diagnostic Verification</h3><p>After cleaning pressure pipes and sensors:</p><ol><li>Reinstall sensors using anti-seize high-temperature thread compound.</li><li>Ensure differential pressure pipe fittings are torqued to OEM specification to prevent exhaust leaks.</li><li>Connect an OBD-II diagnostic scanner to clear historic DPF fault codes and check live sensor parameter values (Differential Pressure reading should hover near 0 – 5 mbar at idle).</li></ol>",
+      "faqs": [
+        {
+          "question": "Why must differential pressure pipes be cleaned during DPF restoration?",
+          "answer": "Carbon crust and condensation inside metal pressure pipes block pressure signals to the differential pressure sensor, leading to false P2452/P2453 error codes even after the DPF filter itself is completely clean."
+        },
+        {
+          "question": "Can EGT sensors be cleaned with wire brushes?",
+          "answer": "No. Wire brushes destroy the sensitive ceramic probe and thermocouple element. Only spray with approved sensor contact cleaner and wipe gently with a soft lint-free cloth."
+        }
+      ]
+    }
+  ],
+  "enquiries": [],
+  "bookings": []
 }
