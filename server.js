@@ -38,7 +38,7 @@ app.use('/admin', express.static(path.join(__dirname, 'public', 'admin')));
 app.use('/public', express.static(path.join(__dirname, 'public')));
 
 // Explicit handler for /admin route
-app.get(['/admin', '/admin/*'], (req, res) => {
+app.get(['/admin', '/admin/'], (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'admin', 'index.html'));
 });
 
@@ -67,7 +67,7 @@ const dbPath = path.join(__dirname, 'data', 'db.json');
 function getDbData() {
   try {
     if (!fs.existsSync(dbPath)) {
-      return { products: [], services: [], blogs: [], enquiries: [], bookings: [] };
+      return { products: [], services: [], blogs: [], enquiries: [], bookings: [], reviews: [] };
     }
     const content = fs.readFileSync(dbPath, 'utf8');
     const parsed = JSON.parse(content);
@@ -76,11 +76,12 @@ function getDbData() {
       services: parsed.services || [],
       blogs: parsed.blogs || [],
       enquiries: parsed.enquiries || [],
-      bookings: parsed.bookings || []
+      bookings: parsed.bookings || [],
+      reviews: parsed.reviews || []
     };
   } catch (error) {
     console.error('Error reading db.json:', error);
-    return { products: [], services: [], blogs: [], enquiries: [], bookings: [] };
+    return { products: [], services: [], blogs: [], enquiries: [], bookings: [], reviews: [] };
   }
 }
 
@@ -100,7 +101,7 @@ function saveDbData(data) {
 }
 
 // Root & Admin Route Handler - Serves Admin Portal UI directly
-app.get(['/', '/admin', '/admin/*'], (req, res) => {
+app.get(['/', '/admin', '/admin/'], (req, res) => {
   const adminPath = path.join(__dirname, 'public', 'admin', 'index.html');
   if (fs.existsSync(adminPath)) {
     return res.sendFile(adminPath);
@@ -593,6 +594,115 @@ app.delete('/api/bookings/:id', (req, res) => {
   data.bookings = data.bookings.filter(b => b.id !== id);
   saveDbData(data);
   res.json({ success: true, message: 'Booking deleted' });
+});
+
+// ==========================================
+// REVIEWS ENDPOINTS (ADMIN + USER SIDE)
+// ==========================================
+
+// GET /api/reviews -> Fetch all customer reviews
+app.get('/api/reviews', (req, res) => {
+  const includeHidden = req.query.all === 'true';
+  const data = getDbData();
+  let reviews = data.reviews || [];
+  if (!includeHidden) {
+    reviews = reviews.filter(r => r.active !== false);
+  }
+  reviews.sort((a, b) => (a.order || 0) - (b.order || 0));
+  res.json({
+    success: true,
+    count: reviews.length,
+    reviews
+  });
+});
+
+// POST /api/reviews -> Create new customer review
+app.post('/api/reviews', (req, res) => {
+  try {
+    const { customerName, customerImage, rating, reviewText, relativeTime, googleReviewLink, order, active } = req.body;
+    if (!customerName || !reviewText) {
+      return res.status(400).json({ success: false, error: 'Customer name and review text are required' });
+    }
+
+    const data = getDbData();
+    if (!data.reviews) data.reviews = [];
+
+    const newReview = {
+      id: `rev-${Date.now()}`,
+      customerName: customerName.trim(),
+      customerImage: customerImage || '',
+      rating: Number(rating) || 5,
+      reviewText: reviewText.trim(),
+      relativeTime: relativeTime || 'recently',
+      googleReviewLink: googleReviewLink || '',
+      order: Number(order) || (data.reviews.length + 1),
+      active: active !== undefined ? Boolean(active) : true,
+      createdAt: new Date().toISOString()
+    };
+
+    data.reviews.push(newReview);
+    saveDbData(data);
+
+    res.status(201).json({
+      success: true,
+      message: 'Review added successfully!',
+      review: newReview
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, error: 'Failed to add review' });
+  }
+});
+
+// PUT /api/reviews/:id -> Edit existing review
+app.put('/api/reviews/:id', (req, res) => {
+  try {
+    const { id } = req.params;
+    const data = getDbData();
+    const index = (data.reviews || []).findIndex(r => r.id === id);
+
+    if (index === -1) {
+      return res.status(404).json({ success: false, error: 'Review not found' });
+    }
+
+    data.reviews[index] = {
+      ...data.reviews[index],
+      ...req.body,
+      id: data.reviews[index].id
+    };
+
+    saveDbData(data);
+
+    res.json({
+      success: true,
+      message: 'Review updated successfully!',
+      review: data.reviews[index]
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, error: 'Failed to update review' });
+  }
+});
+
+// DELETE /api/reviews/:id -> Delete review
+app.delete('/api/reviews/:id', (req, res) => {
+  try {
+    const { id } = req.params;
+    const data = getDbData();
+    const initialLen = (data.reviews || []).length;
+    data.reviews = (data.reviews || []).filter(r => r.id !== id);
+
+    if (data.reviews.length === initialLen) {
+      return res.status(404).json({ success: false, error: 'Review not found' });
+    }
+
+    saveDbData(data);
+
+    res.json({
+      success: true,
+      message: 'Review deleted successfully'
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, error: 'Failed to delete review' });
+  }
 });
 
 // Start Express Server
