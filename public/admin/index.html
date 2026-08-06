@@ -842,13 +842,7 @@
 
   <script>
     const loc = window.location;
-    let API_BASE = loc.origin + '/api';
-
-    if (loc.pathname.includes('/hiquality')) {
-      API_BASE = loc.origin + '/hiquality/api';
-    } else {
-      API_BASE = loc.origin + '/api';
-    }
+    const API_BASE = loc.origin + '/api';
     console.log('[Admin] origin:', loc.origin, '| pathname:', loc.pathname, '| API_BASE:', API_BASE);
 
     let servicesData = [];
