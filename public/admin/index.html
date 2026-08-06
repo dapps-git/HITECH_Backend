@@ -841,17 +841,15 @@
   </div>
 
   <script>
-    const rawPath = window.location.pathname;
-    let API_BASE = '/api';
+    const loc = window.location;
+    let API_BASE = loc.origin + '/api';
 
-    if (rawPath.includes('/hiquality/admin')) {
-      API_BASE = '/hiquality/api';
-    } else if (rawPath.startsWith('/admin')) {
-      API_BASE = '/api';
+    if (loc.pathname.includes('/hiquality')) {
+      API_BASE = loc.origin + '/hiquality/api';
     } else {
-      API_BASE = '/api';
+      API_BASE = loc.origin + '/api';
     }
-    console.log('[Admin] pathname:', rawPath, '| API_BASE:', API_BASE);
+    console.log('[Admin] origin:', loc.origin, '| pathname:', loc.pathname, '| API_BASE:', API_BASE);
 
     let servicesData = [];
     let productsData = [];

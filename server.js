@@ -23,12 +23,18 @@ app.use(bodyParser.json({ limit: '10mb' }));
 app.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }));
 
 // Subfolder base path middleware for cPanel deployments
-// Strips /hiquality/admin or /hiquality prefix so all /api/* routes work correctly
+// Strips /hiquality/admin, /admin/api or /hiquality prefix so all /api/* routes work correctly
 app.use((req, res, next) => {
-  if (req.url.startsWith('/hiquality/admin')) {
+  if (req.url.startsWith('/hiquality/admin/api')) {
+    req.url = req.url.replace('/hiquality/admin/api', '/api');
+  } else if (req.url.startsWith('/hiquality/admin')) {
     req.url = req.url.replace('/hiquality/admin', '') || '/';
+  } else if (req.url.startsWith('/hiquality/api')) {
+    req.url = req.url.replace('/hiquality/api', '/api');
   } else if (req.url.startsWith('/hiquality')) {
     req.url = req.url.replace('/hiquality', '') || '/';
+  } else if (req.url.startsWith('/admin/api')) {
+    req.url = req.url.replace('/admin/api', '/api');
   }
   next();
 });
