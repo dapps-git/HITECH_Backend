@@ -842,7 +842,15 @@
 
   <script>
     const loc = window.location;
-    const API_BASE = loc.origin + '/api';
+    // cPanel mounts this Node.js app at /hiquality/admin, so API calls must go through that prefix
+    let API_BASE;
+    if (loc.pathname.startsWith('/hiquality/admin')) {
+      API_BASE = loc.origin + '/hiquality/admin/api';
+    } else if (loc.pathname.startsWith('/hiquality')) {
+      API_BASE = loc.origin + '/hiquality/api';
+    } else {
+      API_BASE = loc.origin + '/api';
+    }
     console.log('[Admin] origin:', loc.origin, '| pathname:', loc.pathname, '| API_BASE:', API_BASE);
 
     let servicesData = [];
