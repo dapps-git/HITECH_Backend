@@ -4,10 +4,11 @@
       "id": "prod-1",
       "title": "CAR SILENCERS",
       "image": "/images/prod_passenger_car.png",
-      "category": "Passenger Cars",
-      "shortDesc": "High performance OEM specification silencers for all passenger cars. Built for durability.",
-      "fullDesc": "High performance OEM specification silencer engineered for passenger cars. Features heavy-duty galvanised sheets or pipe construction, precision acoustic tuning, and minimum 10-year service life.",
-      "spec": "1.6mm Galvanised Sheets or Pipe"
+      "category": "Passenger Car",
+      "shortDesc": "High performance OEM specification silencers for all passenger cars. Built for durability",
+      "fullDesc": "High performance OEM specification silencer engineered for passenger cars. Features heavy-duty galvanised sheets or pipe construction, precision acoustic tuning, and minimum 10-year service life",
+      "spec": "1.6mm Galvanised Sheets or Pipe",
+      "desc": "High performance OEM specification silencers for all passenger cars. Built for durability"
     },
     {
       "id": "prod-2",
@@ -16,7 +17,8 @@
       "category": "SUV & Pickup",
       "shortDesc": "Robust silencers designed for SUVs and pickup trucks for powerful performance.",
       "fullDesc": "Robust silencers specially engineered for SUVs and 4x4 pickup trucks. Designed for high exhaust flow, maximum backpressure reduction, and durable performance under extreme driving conditions.",
-      "spec": "2.0mm Galvanised Sheets or Pipe"
+      "spec": "2.0mm Galvanised Sheets or Pipe",
+      "desc": "Robust silencers designed for SUVs and pickup trucks for powerful performance."
     },
     {
       "id": "prod-3",
@@ -44,6 +46,15 @@
       "shortDesc": "Bespoke custom-built silencers tailored to exact vehicle specifications and customer requirements.",
       "fullDesc": "Custom-engineered silencers built to exact client specifications, custom vehicle dimensions, and specialized noise control requirements. Crafted using premium corrosion-resistant alloys.",
       "spec": "Custom Baffle & Flange Assembly"
+    },
+    {
+      "id": "prod-6",
+      "title": "EXHAUST FLEXIBLE BELLOWS",
+      "image": "/images/prod_bellows.png",
+      "category": "Automotive & Industrial",
+      "shortDesc": "Premium Stainless Steel Flexible Bellows for Automotive & Industrial Applications.",
+      "fullDesc": "Hi Quality Silencers offers a wide range of premium-quality Exhaust Flexible Bellows engineered to absorb engine vibrations, reduce stress on exhaust systems, and compensate for thermal expansion. Manufactured from high-grade stainless steel, our bellows deliver exceptional durability, flexibility, and long-lasting performance under demanding operating conditions.\n\nWhether for passenger cars, commercial vehicles, or industrial exhaust systems, we provide the right bellows solution for every application.",
+      "spec": "High-Grade Stainless Steel Bellows"
     }
   ],
   "services": [
@@ -155,30 +166,6 @@
   "bookings": [],
   "reviews": [
     {
-      "id": "rev-1786004164920",
-      "customerName": "JIBIN M",
-      "customerImage": "",
-      "rating": 5,
-      "reviewText": "good product & Super quality",
-      "relativeTime": "a week ago",
-      "googleReviewLink": "",
-      "order": 1,
-      "active": true,
-      "createdAt": "2026-08-06T08:16:04.920Z"
-    },
-    {
-      "id": "rev-1786004195424",
-      "customerName": "PRAVEEN C V",
-      "customerImage": "",
-      "rating": 4,
-      "reviewText": "Just OK. OEM is always best.",
-      "relativeTime": "1 months ago",
-      "googleReviewLink": "",
-      "order": 1,
-      "active": true,
-      "createdAt": "2026-08-06T08:16:35.424Z"
-    },
-    {
       "id": "rev-1786004242898",
       "customerName": "Ramanarayanan Chandrasekhara",
       "customerImage": "",
@@ -191,160 +178,112 @@
       "createdAt": "2026-08-06T08:17:22.898Z"
     },
     {
-      "id": "rev-1786004272882",
-      "customerName": "Rajeena m",
+      "id": "rev-1786430130942",
+      "customerName": "ALEENA MM",
       "customerImage": "",
       "rating": 5,
-      "reviewText": "best Quality product",
+      "reviewText": "The team took the time to explain the reason for the DPF blockage and how to avoid it in the future. I really appreciated the transparency and customer support.",
       "relativeTime": "recently",
       "googleReviewLink": "",
       "order": 1,
       "active": true,
-      "createdAt": "2026-08-06T08:17:52.882Z"
+      "createdAt": "2026-08-11T06:35:30.942Z"
     },
     {
-      "id": "rev-1786004293113",
-      "customerName": "Ranjith Ammathur",
+      "id": "rev-1786430177431",
+      "customerName": "SHIBINRAG",
       "customerImage": "",
-      "rating": 4,
-      "reviewText": "Good Quality Products",
+      "rating": 5,
+      "reviewText": "Good quality product and best service.The workshop is clean, well-equipped, and the staff are knowledgeable.",
       "relativeTime": "recently",
       "googleReviewLink": "",
       "order": 1,
       "active": true,
-      "createdAt": "2026-08-06T08:18:13.113Z"
+      "createdAt": "2026-08-11T06:36:17.431Z"
     },
     {
-      "id": "rev-1786004323816",
-      "customerName": "SONIJ PALAZHI",
+      "id": "rev-1786430197670",
+      "customerName": "AJITH LAL",
       "customerImage": "",
       "rating": 5,
-      "reviewText": "Thanks google..... Helpful",
-      "relativeTime": "9 years ago",
+      "reviewText": "Bought a Tunex silencer for my Kwid. The build quality is much better than the OEM silencer, and it comes with a 15-month warranty. Highly recommended!",
+      "relativeTime": "recently",
       "googleReviewLink": "",
       "order": 1,
       "active": true,
-      "createdAt": "2026-08-06T08:18:43.816Z"
+      "createdAt": "2026-08-11T06:36:37.670Z"
     },
     {
-      "id": "rev-1786004371617",
-      "customerName": "Vipin k",
+      "id": "rev-1786430232497",
+      "customerName": "AKHIL DATH",
       "customerImage": "",
       "rating": 5,
-      "reviewText": "Good products",
-      "relativeTime": "1 months ago",
+      "reviewText": "I am satisfied with both the product quality and the service. The staff were experienced, and the work was completed within the promised time.",
+      "relativeTime": "recently",
       "googleReviewLink": "",
       "order": 1,
       "active": true,
-      "createdAt": "2026-08-06T08:19:31.617Z"
+      "createdAt": "2026-08-11T06:37:12.497Z"
     },
     {
-      "id": "rev-1786004403406",
-      "customerName": "Sibin Chacko",
+      "id": "rev-1786430253392",
+      "customerName": "SINAN",
       "customerImage": "",
       "rating": 5,
-      "reviewText": "Quality services",
-      "relativeTime": "3 years ago",
+      "reviewText": "After visiting Hi Quality Silencers, I understood why they have a good reputation. Professional approach and quality work",
+      "relativeTime": "recently",
       "googleReviewLink": "",
       "order": 1,
       "active": true,
-      "createdAt": "2026-08-06T08:20:03.406Z"
+      "createdAt": "2026-08-11T06:37:33.392Z"
     },
     {
-      "id": "rev-1786004429943",
-      "customerName": "Adv Arun Raj K B",
+      "id": "rev-1786430311293",
+      "customerName": "Akshaya",
+      "customerImage": "Akshaya",
+      "rating": 5,
+      "reviewText": "The workshop is clean, well-equipped, and the staff are knowledgeable. They completed my DPF cleaning as promised and kept me updated throughout the process. Very satisfied.",
+      "relativeTime": "recently",
+      "googleReviewLink": "",
+      "order": 1,
+      "active": true,
+      "createdAt": "2026-08-11T06:38:31.293Z"
+    },
+    {
+      "id": "rev-1786430337404",
+      "customerName": "Nandu",
       "customerImage": "",
       "rating": 5,
-      "reviewText": "Very good service",
-      "relativeTime": "a week ago",
+      "reviewText": "I visited Hi Quality Silencers for DPF cleaning on my BS6 diesel vehicle. The team explained the complete process before starting the work. The service was completed on time, and I noticed better pickup and smoother driving afterward. Professional service and friendly staff.",
+      "relativeTime": "recently",
       "googleReviewLink": "",
       "order": 1,
       "active": true,
-      "createdAt": "2026-08-06T08:20:29.943Z"
+      "createdAt": "2026-08-11T06:38:57.404Z"
     },
     {
-      "id": "rev-1786004451198",
-      "customerName": "Harsha Subash",
+      "id": "rev-1786430458187",
+      "customerName": "Abhinand",
       "customerImage": "",
       "rating": 5,
-      "reviewText": "Good product",
-      "relativeTime": "1 week ago",
+      "reviewText": "I replaced the silencer on my vehicle with an OEM specification silencer from Hi Quality Silencers. The fitment was perfect, and the quality was much better than what I had seen elsewhere. Happy with the service.",
+      "relativeTime": "recently",
       "googleReviewLink": "",
       "order": 1,
       "active": true,
-      "createdAt": "2026-08-06T08:20:51.198Z"
+      "createdAt": "2026-08-11T06:40:58.187Z"
     },
     {
-      "id": "rev-1786004475543",
-      "customerName": "Ak Hrithul Kumar",
+      "id": "rev-1786430476583",
+      "customerName": "Athul",
       "customerImage": "",
       "rating": 5,
-      "reviewText": "Good product",
-      "relativeTime": "2 months ago",
+      "reviewText": "I was searching for a reliable DPF cleaning center in Kozhikode. After visiting Hi Quality Silencers, I understood why they have a good reputation. Professional approach and quality work.☺️👍",
+      "relativeTime": "recently",
       "googleReviewLink": "",
       "order": 1,
       "active": true,
-      "createdAt": "2026-08-06T08:21:15.543Z"
-    },
-    {
-      "id": "rev-1786004496709",
-      "customerName": "Jishnu Appu",
-      "customerImage": "",
-      "rating": 5,
-      "reviewText": "Good product",
-      "relativeTime": "a week ago",
-      "googleReviewLink": "",
-      "order": 1,
-      "active": true,
-      "createdAt": "2026-08-06T08:21:36.709Z"
-    },
-    {
-      "id": "rev-1786004520348",
-      "customerName": "Nirmal C",
-      "customerImage": "",
-      "rating": 4,
-      "reviewText": "Good service 👍👍❤️🥰",
-      "relativeTime": "a week ago",
-      "googleReviewLink": "",
-      "order": 1,
-      "active": true,
-      "createdAt": "2026-08-06T08:22:00.348Z"
-    },
-    {
-      "id": "rev-1786004540921",
-      "customerName": "Raneesh Kathalatt",
-      "customerImage": "",
-      "rating": 5,
-      "reviewText": "good",
-      "relativeTime": "a week ago",
-      "googleReviewLink": "",
-      "order": 1,
-      "active": true,
-      "createdAt": "2026-08-06T08:22:20.921Z"
-    },
-    {
-      "id": "rev-1786004564895",
-      "customerName": "Sathi T Sathi T",
-      "customerImage": "",
-      "rating": 5,
-      "reviewText": "Problem solved, good product",
-      "relativeTime": "a week ago",
-      "googleReviewLink": "",
-      "order": 1,
-      "active": true,
-      "createdAt": "2026-08-06T08:22:44.895Z"
-    },
-    {
-      "id": "rev-1786004590641",
-      "customerName": "nikhil t",
-      "customerImage": "",
-      "rating": 5,
-      "reviewText": "good quality products",
-      "relativeTime": "2 months ago",
-      "googleReviewLink": "",
-      "order": 1,
-      "active": true,
-      "createdAt": "2026-08-06T08:23:10.641Z"
+      "createdAt": "2026-08-11T06:41:16.583Z"
     }
   ]
 }

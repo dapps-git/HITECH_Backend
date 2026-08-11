@@ -639,19 +639,19 @@
             <label class="form-label">Specification</label>
             <input type="text" id="prodSpec" class="form-input" placeholder="e.g. Galvanised Steel 1.6mm" />
           </div>
-          <div class="form-group">
-            <label class="form-label">Product Image (Cloudinary Upload)</label>
-            <div style="display:flex; gap:8px;">
-              <input type="text" id="prodImage" class="form-input" placeholder="https://res.cloudinary.com/..." />
-              <label class="btn btn-outline" style="cursor:pointer; white-space:nowrap;">
-                <i class="fa-solid fa-upload"></i> Upload
-                <input type="file" accept="image/*" style="display:none;" onchange="uploadImage(this, 'prodImage', 'prodImagePreview')" />
-              </label>
+            <div class="form-group">
+              <label class="form-label">Product Image (Cloudinary Upload or URL)</label>
+              <div style="display:flex; gap:8px;">
+                <input type="text" id="prodImage" class="form-input" placeholder="https://res.cloudinary.com/... or /images/..." oninput="updateProdImagePreview()" />
+                <label class="btn btn-outline" style="cursor:pointer; white-space:nowrap;">
+                  <i class="fa-solid fa-upload"></i> Upload
+                  <input type="file" accept="image/*" style="display:none;" onchange="uploadImage(this, 'prodImage', 'prodImagePreview')" />
+                </label>
+              </div>
+              <div id="prodImagePreview" style="margin-top:8px; display:none;">
+                <img src="" style="height:60px; border-radius:6px; border:1px solid #e2e8f0; object-fit:contain;" />
+              </div>
             </div>
-            <div id="prodImagePreview" style="margin-top:8px; display:none;">
-              <img src="" style="height:60px; border-radius:6px; border:1px solid #e2e8f0; object-fit:contain;" />
-            </div>
-          </div>
         </div>
 
         <div class="form-group">
@@ -1121,6 +1121,19 @@
       if (preview) preview.style.display = 'none';
       document.getElementById('productModalTitle').innerHTML = '<i class="fa-solid fa-box-archive" style="color:#dc2626; margin-right:8px;"></i> Add Product';
       document.getElementById('productModal').classList.add('show');
+    }
+
+    function updateProdImagePreview() {
+      const url = document.getElementById('prodImage').value.trim();
+      const preview = document.getElementById('prodImagePreview');
+      if (preview) {
+        if (url) {
+          preview.querySelector('img').src = url;
+          preview.style.display = 'block';
+        } else {
+          preview.style.display = 'none';
+        }
+      }
     }
 
     function editProduct(id) {

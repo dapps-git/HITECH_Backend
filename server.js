@@ -107,7 +107,7 @@ function saveDbData(data) {
 }
 
 // Root & Admin Route Handler - Serves Admin Portal UI directly
-app.get(['/', '/admin', '/admin/'], (req, res) => {
+app.get(['/', '/admin', '/admin/*', '/admin/login'], (req, res) => {
   const adminPath = path.join(__dirname, 'public', 'admin', 'index.html');
   if (fs.existsSync(adminPath)) {
     return res.sendFile(adminPath);
