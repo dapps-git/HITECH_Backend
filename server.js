@@ -11,9 +11,8 @@ const mongoose = require('mongoose');
 const Product = require('./models/Product');
 const Service = require('./models/Service');
 const BlogPost = require('./models/BlogPost');
-const Enquiry = require('./models/Enquiry');
-const Booking = require('./models/Booking');
 const Review = require('./models/Review');
+const Admin = require('./models/Admin');
 
 const upload = multer({ storage: multer.memoryStorage() });
 
@@ -146,26 +145,43 @@ app.get('/api/health', (req, res) => {
 // ==========================================
 // ADMIN AUTHENTICATION
 // ==========================================
-app.post('/api/admin/login', (req, res) => {
-  const emailInput = (req.body.email || '').trim().toLowerCase();
-  const passwordInput = (req.body.password || '').trim();
+app.post('/api/admin/login', async (req, res) => {
+  try {
+    const emailInput = (req.body.email || '').trim().toLowerCase();
+    const passwordInput = (req.body.password || '').trim();
 
-  const validEmail = emailInput === 'highqualityadmin.com' ||
-                     emailInput === 'highqualityadmin@gmail.com' ||
-                     emailInput === 'admin@hiquality.com' ||
-                     emailInput === 'admin';
-  const validPassword = passwordInput === 'highqualityadmin12345' || passwordInput === 'admin123';
+    let authenticated = false;
+    let adminName = 'Hi-Quality Admin';
 
-  if (!validEmail || !validPassword) {
-    return res.status(401).json({ success: false, error: 'Invalid email or password' });
+    // 1. Check MongoDB Atlas Admin collection
+    if (mongoose.connection.readyState === 1) {
+      const adminDoc = await Admin.findOne({ email: emailInput }).lean();
+      if (adminDoc && adminDoc.password === passwordInput) {
+        authenticated = true;
+        adminName = adminDoc.name || adminName;
+      }
+    }
+
+    // 2. Fallback check exclusively for highqualityadmin@gmail.com
+    if (!authenticated) {
+      if (emailInput === 'highqualityadmin@gmail.com' && passwordInput === 'highqualityadmin12345') {
+        authenticated = true;
+      }
+    }
+
+    if (!authenticated) {
+      return res.status(401).json({ success: false, error: 'Invalid email or password' });
+    }
+
+    res.json({
+      success: true,
+      message: 'Admin login successful',
+      token: `admin-token-${Date.now()}`,
+      user: { email: emailInput, name: adminName }
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, error: 'Admin login failed' });
   }
-
-  res.json({
-    success: true,
-    message: 'Admin login successful',
-    token: `admin-token-${Date.now()}`,
-    user: { email: emailInput, name: 'Hi-Quality Admin' }
-  });
 });
 
 // ==========================================

@@ -7,15 +7,12 @@ require('dotenv').config();
 const Product = require('./models/Product');
 const Service = require('./models/Service');
 const BlogPost = require('./models/BlogPost');
-const Enquiry = require('./models/Enquiry');
-const Booking = require('./models/Booking');
 const Review = require('./models/Review');
 
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://hitech_db_user:hitech234@cluster0.hdxwklk.mongodb.net/hitech_db?retryWrites=true&w=majority';
 
 function sanitizeItem(item) {
   const clean = { ...item };
-  // If _id is present and is not a valid 24 hex char ObjectId, remove it so Mongoose handles _id automatically
   if (clean._id && (typeof clean._id !== 'string' || !/^[0-9a-fA-F]{24}$/.test(clean._id))) {
     delete clean._id;
   }
@@ -70,29 +67,7 @@ async function seedDatabase() {
       console.log('Blog posts seeded successfully!');
     }
 
-    // 4. Seed Enquiries
-    if (Array.isArray(data.enquiries) && data.enquiries.length > 0) {
-      console.log(`Seeding ${data.enquiries.length} enquiries...`);
-      for (const rawItem of data.enquiries) {
-        const item = sanitizeItem(rawItem);
-        const query = item.id ? { id: item.id } : { phone: item.phone, createdAt: item.createdAt };
-        await Enquiry.findOneAndUpdate(query, item, { upsert: true, returnDocument: 'after', setDefaultsOnInsert: true });
-      }
-      console.log('Enquiries seeded successfully!');
-    }
-
-    // 5. Seed Bookings
-    if (Array.isArray(data.bookings) && data.bookings.length > 0) {
-      console.log(`Seeding ${data.bookings.length} bookings...`);
-      for (const rawItem of data.bookings) {
-        const item = sanitizeItem(rawItem);
-        const query = item.id ? { id: item.id } : { phone: item.phone, createdAt: item.createdAt };
-        await Booking.findOneAndUpdate(query, item, { upsert: true, returnDocument: 'after', setDefaultsOnInsert: true });
-      }
-      console.log('Bookings seeded successfully!');
-    }
-
-    // 6. Seed Reviews
+    // 4. Seed Reviews
     if (Array.isArray(data.reviews) && data.reviews.length > 0) {
       console.log(`Seeding ${data.reviews.length} reviews...`);
       for (const rawItem of data.reviews) {
