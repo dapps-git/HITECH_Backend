@@ -853,6 +853,20 @@
     }
     console.log('[Admin] origin:', loc.origin, '| pathname:', loc.pathname, '| API_BASE:', API_BASE);
 
+    function getImgUrl(url) {
+      if (!url) return 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="38" height="38" viewBox="0 0 24 24" fill="%23e2e8f0"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>';
+      if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) return url;
+      
+      const basePath = loc.pathname.startsWith('/hiquality/admin') 
+        ? '/hiquality/admin' 
+        : (loc.pathname.startsWith('/hiquality') ? '/hiquality' : '');
+        
+      if (url.startsWith('/')) {
+        return loc.origin + basePath + url;
+      }
+      return loc.origin + basePath + '/' + url;
+    }
+
     let servicesData = [];
     let productsData = [];
     let blogsData = [];
@@ -971,7 +985,7 @@
         <tr>
           <td>
             <div style="display:flex; align-items:center; gap:10px;">
-              <img src="${p.image ? (p.image.startsWith('http') ? p.image : 'https://hitech-s.vercel.app' + p.image) : 'https://hitech-s.vercel.app/images/prod_passenger_car.png'}" style="width:38px; height:38px; border-radius:6px; object-fit:contain; border:1px solid #e2e8f0; background:#f8fafc; padding:2px;" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2238%22 height=%2238%22 viewBox=%220 0 24 24%22 fill=%22%23e2e8f0%22><path d=%22M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z%22/></svg>'" />
+              <img src="${getImgUrl(p.image)}" style="width:38px; height:38px; border-radius:6px; object-fit:contain; border:1px solid #e2e8f0; background:#f8fafc; padding:2px;" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2238%22 height=%2238%22 viewBox=%220 0 24 24%22 fill=%22%23e2e8f0%22><path d=%22M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z%22/></svg>'" />
               <div>
                 <strong style="color:#0f172a;">${p.title}</strong>
                 <div style="font-size:0.7rem; color:#64748b;">ID: ${pid}</div>
@@ -1010,7 +1024,7 @@
         <tr>
           <td>
             <div style="display:flex; align-items:center; gap:10px;">
-              <img src="${b.featuredImage || '/images/dpf_fault_codes_guide_v2.jpg'}" onerror="this.onerror=null;this.src='https://res.cloudinary.com/zkgbtcke/image/upload/v1785730447/hitech_products/novfukencmlqdsrroqox.webp';" style="width:38px; height:38px; border-radius:6px; object-fit:cover; border:1px solid #e2e8f0;" />
+              <img src="${getImgUrl(b.featuredImage || '/images/dpf_fault_codes_guide_v2.jpg')}" onerror="this.onerror=null;this.src='https://res.cloudinary.com/zkgbtcke/image/upload/v1785730447/hitech_products/novfukencmlqdsrroqox.webp';" style="width:38px; height:38px; border-radius:6px; object-fit:cover; border:1px solid #e2e8f0;" />
               <div>
                 <strong style="color:#0f172a;">${b.title}</strong>
                 <div style="font-size:0.72rem; color:#64748b;">/blog/${b.slug || bid}</div>
@@ -1128,7 +1142,7 @@
       const preview = document.getElementById('prodImagePreview');
       if (preview) {
         if (url) {
-          preview.querySelector('img').src = url;
+          preview.querySelector('img').src = getImgUrl(url);
           preview.style.display = 'block';
         } else {
           preview.style.display = 'none';
@@ -1154,7 +1168,7 @@
       const preview = document.getElementById('prodImagePreview');
       if (preview) {
         if (p.image) {
-          preview.querySelector('img').src = p.image;
+          preview.querySelector('img').src = getImgUrl(p.image);
           preview.style.display = 'block';
         } else {
           preview.style.display = 'none';
