@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
@@ -5,6 +6,14 @@ const fs = require('fs');
 const path = require('path');
 const multer = require('multer');
 const { v2: cloudinary } = require('cloudinary');
+const mongoose = require('mongoose');
+
+const Product = require('./models/Product');
+const Service = require('./models/Service');
+const BlogPost = require('./models/BlogPost');
+const Enquiry = require('./models/Enquiry');
+const Booking = require('./models/Booking');
+const Review = require('./models/Review');
 
 const upload = multer({ storage: multer.memoryStorage() });
 
@@ -17,13 +26,22 @@ cloudinary.config({
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// Connect to MongoDB Atlas
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://hitech_db_user:hitech234@cluster0.hdxwklk.mongodb.net/hitech_db?retryWrites=true&w=majority';
+mongoose.connect(MONGODB_URI, {
+  serverSelectionTimeoutMS: 5000
+}).then(() => {
+  console.log('Successfully connected to MongoDB Atlas!');
+}).catch(err => {
+  console.error('MongoDB Atlas connection error:', err.message);
+});
+
 // Enable CORS for frontend domain & local testing
 app.use(cors());
 app.use(bodyParser.json({ limit: '10mb' }));
 app.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }));
 
 // Subfolder base path middleware for cPanel deployments
-// Strips /hiquality/admin, /admin/api or /hiquality prefix so all /api/* routes work correctly
 app.use((req, res, next) => {
   if (req.url.startsWith('/hiquality/admin/api')) {
     req.url = req.url.replace('/hiquality/admin/api', '/api');
@@ -62,6 +80,7 @@ app.get('/api/debug', (req, res) => {
     adminPath,
     adminExists,
     publicFiles,
+    mongoState: mongoose.connection.readyState,
     reqUrl: req.url,
     originalUrl: req.originalUrl
   });
@@ -69,7 +88,7 @@ app.get('/api/debug', (req, res) => {
 
 const dbPath = path.join(__dirname, 'data', 'db.json');
 
-// Helper to read database JSON
+// Helper to read database JSON fallback
 function getDbData() {
   try {
     if (!fs.existsSync(dbPath)) {
@@ -91,7 +110,7 @@ function getDbData() {
   }
 }
 
-// Helper to write database JSON
+// Helper to write database JSON fallback
 function saveDbData(data) {
   try {
     const dirPath = path.dirname(dbPath);
@@ -117,27 +136,35 @@ app.get(['/', '/admin', '/admin/*', '/admin/login'], (req, res) => {
 });
 
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'OK', environment: process.env.NODE_ENV || 'production' });
+  res.json({
+    status: 'OK',
+    environment: process.env.NODE_ENV || 'production',
+    mongoConnection: mongoose.connection.readyState === 1 ? 'CONNECTED' : 'DISCONNECTED'
+  });
 });
 
 // ==========================================
 // ADMIN AUTHENTICATION
 // ==========================================
 app.post('/api/admin/login', (req, res) => {
-  const { email, password } = req.body;
-  const validEmail = email === 'highqualityadmin.com' || email === 'highqualityadmin@gmail.com' || email === 'admin@hiquality.com';
-  const validPassword = password === 'highqualityadmin12345' || password === 'admin123';
+  const emailInput = (req.body.email || '').trim().toLowerCase();
+  const passwordInput = (req.body.password || '').trim();
+
+  const validEmail = emailInput === 'highqualityadmin.com' ||
+                     emailInput === 'highqualityadmin@gmail.com' ||
+                     emailInput === 'admin@hiquality.com' ||
+                     emailInput === 'admin';
+  const validPassword = passwordInput === 'highqualityadmin12345' || passwordInput === 'admin123';
 
   if (!validEmail || !validPassword) {
     return res.status(401).json({ success: false, error: 'Invalid email or password' });
   }
 
-
   res.json({
     success: true,
     message: 'Admin login successful',
     token: `admin-token-${Date.now()}`,
-    user: { email, name: 'Hi-Quality Admin' }
+    user: { email: emailInput, name: 'Hi-Quality Admin' }
   });
 });
 
@@ -180,43 +207,55 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
 // ==========================================
 // DYNAMIC SERVICES ENDPOINTS
 // ==========================================
-
-// GET /api/services -> Fetch all services
-app.get('/api/services', (req, res) => {
-  const data = getDbData();
-  const includeHidden = req.query.all === 'true';
-  let services = data.services || [];
-  if (!includeHidden) {
-    services = services.filter(s => s.visible !== false);
+app.get('/api/services', async (req, res) => {
+  try {
+    const includeHidden = req.query.all === 'true';
+    let services = [];
+    if (mongoose.connection.readyState === 1) {
+      const query = includeHidden ? {} : { visible: { $ne: false } };
+      services = await Service.find(query).sort({ order: 1 }).lean();
+    } else {
+      const data = getDbData();
+      services = data.services || [];
+      if (!includeHidden) {
+        services = services.filter(s => s.visible !== false);
+      }
+      services.sort((a, b) => (a.order || 0) - (b.order || 0));
+    }
+    res.json({
+      success: true,
+      count: services.length,
+      services
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, error: 'Failed to fetch services' });
   }
-  services.sort((a, b) => (a.order || 0) - (b.order || 0));
-  res.json({
-    success: true,
-    count: services.length,
-    services
-  });
 });
 
-// POST /api/services -> Add new service
-app.post('/api/services', (req, res) => {
+app.post('/api/services', async (req, res) => {
   try {
     const { title, desc, icon, link, order, visible } = req.body;
     if (!title || !desc) {
       return res.status(400).json({ success: false, error: 'Title and description are required' });
     }
 
-    const data = getDbData();
-    const newService = {
+    const serviceData = {
       id: `svc-${Date.now()}`,
       title,
       desc,
       icon: icon || 'FaWrench',
       link: link || '#contact',
-      order: Number(order) || (data.services.length + 1),
+      order: Number(order) || 1,
       visible: visible !== undefined ? Boolean(visible) : true
     };
 
-    data.services.push(newService);
+    let newService = serviceData;
+    if (mongoose.connection.readyState === 1) {
+      newService = await Service.create(serviceData);
+    }
+    
+    const data = getDbData();
+    data.services.push(serviceData);
     saveDbData(data);
 
     res.status(201).json({
@@ -225,52 +264,63 @@ app.post('/api/services', (req, res) => {
       service: newService
     });
   } catch (err) {
+    console.error('Error adding service:', err);
     res.status(500).json({ success: false, error: 'Failed to add service' });
   }
 });
 
-// PUT /api/services/:id -> Update existing service
-app.put('/api/services/:id', (req, res) => {
+app.put('/api/services/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const data = getDbData();
-    const index = data.services.findIndex(s => s.id === id || s._id === id);
+    let updatedService = null;
 
-    if (index === -1) {
-      return res.status(404).json({ success: false, error: 'Service not found' });
+    if (mongoose.connection.readyState === 1) {
+      const query = { $or: [{ id }, { _id: mongoose.Types.ObjectId.isValid(id) ? id : null }] };
+      updatedService = await Service.findOneAndUpdate(query, req.body, { returnDocument: 'after' }).lean();
     }
 
-    data.services[index] = {
-      ...data.services[index],
-      ...req.body,
-      id: data.services[index].id
-    };
+    const data = getDbData();
+    const index = data.services.findIndex(s => s.id === id || s._id === id);
+    if (index !== -1) {
+      data.services[index] = { ...data.services[index], ...req.body };
+      if (!updatedService) updatedService = data.services[index];
+      saveDbData(data);
+    }
 
-    saveDbData(data);
+    if (!updatedService) {
+      return res.status(404).json({ success: false, error: 'Service not found' });
+    }
 
     res.json({
       success: true,
       message: 'Service updated successfully!',
-      service: data.services[index]
+      service: updatedService
     });
   } catch (err) {
     res.status(500).json({ success: false, error: 'Failed to update service' });
   }
 });
 
-// DELETE /api/services/:id -> Delete service
-app.delete('/api/services/:id', (req, res) => {
+app.delete('/api/services/:id', async (req, res) => {
   try {
     const { id } = req.params;
+    let deleted = false;
+
+    if (mongoose.connection.readyState === 1) {
+      const query = { $or: [{ id }, { _id: mongoose.Types.ObjectId.isValid(id) ? id : null }] };
+      const result = await Service.findOneAndDelete(query);
+      if (result) deleted = true;
+    }
+
     const data = getDbData();
     const initialLen = data.services.length;
     data.services = data.services.filter(s => s.id !== id && s._id !== id);
+    if (data.services.length < initialLen) deleted = true;
+    saveDbData(data);
 
-    if (data.services.length === initialLen) {
+    if (!deleted) {
       return res.status(404).json({ success: false, error: 'Service not found' });
     }
-
-    saveDbData(data);
 
     res.json({
       success: true,
@@ -284,50 +334,72 @@ app.delete('/api/services/:id', (req, res) => {
 // ==========================================
 // PRODUCTS ENDPOINTS
 // ==========================================
-
-// GET /api/products -> Fetch all products
-app.get('/api/products', (req, res) => {
-  const data = getDbData();
-  res.json({
-    success: true,
-    count: data.products.length,
-    products: data.products
-  });
-});
-
-// GET /api/products/:id -> Fetch single product details
-app.get('/api/products/:id', (req, res) => {
-  const { id } = req.params;
-  const data = getDbData();
-  const product = (data.products || []).find(p => p.id === id || p._id === id);
-  if (!product) {
-    return res.status(404).json({ success: false, error: 'Product not found' });
+app.get('/api/products', async (req, res) => {
+  try {
+    let products = [];
+    if (mongoose.connection.readyState === 1) {
+      products = await Product.find().lean();
+    } else {
+      const data = getDbData();
+      products = data.products || [];
+    }
+    res.json({
+      success: true,
+      count: products.length,
+      products
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, error: 'Failed to fetch products' });
   }
-  res.json({ success: true, product });
 });
 
-// POST /api/products -> Add new product
-app.post('/api/products', (req, res) => {
+app.get('/api/products/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    let product = null;
+    if (mongoose.connection.readyState === 1) {
+      const query = { $or: [{ id }, { _id: mongoose.Types.ObjectId.isValid(id) ? id : null }] };
+      product = await Product.findOne(query).lean();
+    }
+    if (!product) {
+      const data = getDbData();
+      product = (data.products || []).find(p => p.id === id || p._id === id);
+    }
+    if (!product) {
+      return res.status(404).json({ success: false, error: 'Product not found' });
+    }
+    res.json({ success: true, product });
+  } catch (err) {
+    res.status(500).json({ success: false, error: 'Failed to fetch product' });
+  }
+});
+
+app.post('/api/products', async (req, res) => {
   try {
     const { title, category, desc, shortDesc, fullDesc, image, spec } = req.body;
     if (!title) {
       return res.status(400).json({ success: false, error: 'Product title is required' });
     }
 
-    const data = getDbData();
-    const newProduct = {
-      id: `prod-${Date.now()}`,
-      _id: `prod-${Date.now()}`,
+    const prodId = `prod-${Date.now()}`;
+    const productData = {
+      id: prodId,
       title: title.toUpperCase(),
       image: image || '/images/prod_passenger_car.png',
       category: category || 'General Silencer',
       spec: spec || 'OEM Specification',
-      shortDesc: shortDesc || desc || 'High performance OEM specification silencer built for maximum durability and flow efficiency.',
-      fullDesc: fullDesc || desc || shortDesc || 'High performance OEM specification silencer engineered with precision acoustic dampening and corrosion-resistant stainless steel alloys. Designed to deliver optimal backpressure reduction, enhanced engine efficiency, and quiet exhaust notes for demanding driving conditions.',
+      shortDesc: shortDesc || desc || 'High performance OEM specification silencer built for maximum durability.',
+      fullDesc: fullDesc || desc || shortDesc || 'High performance OEM specification silencer engineered with precision acoustic dampening.',
       desc: desc || shortDesc || 'High performance OEM specification silencer built for maximum durability.'
     };
 
-    data.products.push(newProduct);
+    let newProduct = productData;
+    if (mongoose.connection.readyState === 1) {
+      newProduct = await Product.create(productData);
+    }
+
+    const data = getDbData();
+    data.products.push(productData);
     saveDbData(data);
 
     res.status(201).json({
@@ -336,52 +408,63 @@ app.post('/api/products', (req, res) => {
       product: newProduct
     });
   } catch (err) {
+    console.error('Error adding product:', err);
     res.status(500).json({ success: false, error: 'Internal server error' });
   }
 });
 
-// PUT /api/products/:id -> Update product
-app.put('/api/products/:id', (req, res) => {
+app.put('/api/products/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const data = getDbData();
-    const index = data.products.findIndex(p => p.id === id || p._id === id);
+    let updatedProduct = null;
 
-    if (index === -1) {
-      return res.status(404).json({ success: false, error: 'Product not found' });
+    if (mongoose.connection.readyState === 1) {
+      const query = { $or: [{ id }, { _id: mongoose.Types.ObjectId.isValid(id) ? id : null }] };
+      updatedProduct = await Product.findOneAndUpdate(query, req.body, { returnDocument: 'after' }).lean();
     }
 
-    data.products[index] = {
-      ...data.products[index],
-      ...req.body,
-      id: data.products[index].id
-    };
+    const data = getDbData();
+    const index = data.products.findIndex(p => p.id === id || p._id === id);
+    if (index !== -1) {
+      data.products[index] = { ...data.products[index], ...req.body };
+      if (!updatedProduct) updatedProduct = data.products[index];
+      saveDbData(data);
+    }
 
-    saveDbData(data);
+    if (!updatedProduct) {
+      return res.status(404).json({ success: false, error: 'Product not found' });
+    }
 
     res.json({
       success: true,
       message: 'Product updated successfully!',
-      product: data.products[index]
+      product: updatedProduct
     });
   } catch (err) {
     res.status(500).json({ success: false, error: 'Failed to update product' });
   }
 });
 
-// DELETE /api/products/:id -> Delete product
-app.delete('/api/products/:id', (req, res) => {
+app.delete('/api/products/:id', async (req, res) => {
   try {
     const { id } = req.params;
+    let deleted = false;
+
+    if (mongoose.connection.readyState === 1) {
+      const query = { $or: [{ id }, { _id: mongoose.Types.ObjectId.isValid(id) ? id : null }] };
+      const result = await Product.findOneAndDelete(query);
+      if (result) deleted = true;
+    }
+
     const data = getDbData();
     const initialLen = data.products.length;
     data.products = data.products.filter(p => p.id !== id && p._id !== id);
+    if (data.products.length < initialLen) deleted = true;
+    saveDbData(data);
 
-    if (data.products.length === initialLen) {
+    if (!deleted) {
       return res.status(404).json({ success: false, error: 'Product not found' });
     }
-
-    saveDbData(data);
 
     res.json({
       success: true,
@@ -395,44 +478,64 @@ app.delete('/api/products/:id', (req, res) => {
 // ==========================================
 // BLOGS ENDPOINTS
 // ==========================================
-
-// GET /api/blogs -> Fetch all blog posts
-app.get('/api/blogs', (req, res) => {
-  const includeHidden = req.query.all === 'true';
-  const data = getDbData();
-  let blogs = data.blogs || [];
-  if (!includeHidden) {
-    blogs = blogs.filter(b => b.visibility === 'visible');
+app.get('/api/blogs', async (req, res) => {
+  try {
+    const includeHidden = req.query.all === 'true';
+    let blogs = [];
+    if (mongoose.connection.readyState === 1) {
+      const query = includeHidden ? {} : { visibility: 'visible' };
+      blogs = await BlogPost.find(query).sort({ publishDate: -1 }).lean();
+    } else {
+      const data = getDbData();
+      blogs = data.blogs || [];
+      if (!includeHidden) {
+        blogs = blogs.filter(b => b.visibility === 'visible');
+      }
+    }
+    res.json({ success: true, count: blogs.length, blogs });
+  } catch (err) {
+    res.status(500).json({ success: false, error: 'Failed to fetch blog posts' });
   }
-  res.json({ success: true, count: blogs.length, blogs });
 });
 
-// GET /api/blogs/:idOrSlug -> Fetch single blog post by ID or Slug
-app.get('/api/blogs/:idOrSlug', (req, res) => {
-  const { idOrSlug } = req.params;
-  const data = getDbData();
-  const blog = (data.blogs || []).find(b => b.id === idOrSlug || b._id === idOrSlug || b.slug === idOrSlug);
-  if (!blog) {
-    return res.status(404).json({ success: false, error: 'Blog post not found' });
+app.get('/api/blogs/:idOrSlug', async (req, res) => {
+  try {
+    const { idOrSlug } = req.params;
+    let blog = null;
+    if (mongoose.connection.readyState === 1) {
+      const query = {
+        $or: [
+          { slug: idOrSlug },
+          { id: idOrSlug },
+          { _id: mongoose.Types.ObjectId.isValid(idOrSlug) ? idOrSlug : null }
+        ]
+      };
+      blog = await BlogPost.findOne(query).lean();
+    }
+    if (!blog) {
+      const data = getDbData();
+      blog = (data.blogs || []).find(b => b.id === idOrSlug || b._id === idOrSlug || b.slug === idOrSlug);
+    }
+    if (!blog) {
+      return res.status(404).json({ success: false, error: 'Blog post not found' });
+    }
+    res.json({ success: true, blog });
+  } catch (err) {
+    res.status(500).json({ success: false, error: 'Failed to fetch blog post' });
   }
-  res.json({ success: true, blog });
 });
 
-// POST /api/blogs -> Create new blog post
-app.post('/api/blogs', (req, res) => {
+app.post('/api/blogs', async (req, res) => {
   try {
     const { title, content, excerpt, featuredImage, referenceImages, visibility, seoTitle, seoDescription, keywords, category, faqs } = req.body;
     if (!title || !content) {
       return res.status(400).json({ success: false, error: 'Title and content are required' });
     }
 
-    const data = getDbData();
-    if (!data.blogs) data.blogs = [];
-
+    const blogId = `blog-${Date.now()}`;
     const slug = title.toLowerCase().trim().replace(/[\s\W-]+/g, '-') + '-' + Math.floor(Math.random() * 1000);
-    const newBlog = {
-      id: `blog-${Date.now()}`,
-      _id: `blog-${Date.now()}`,
+    const blogData = {
+      id: blogId,
       title,
       slug,
       content,
@@ -448,48 +551,84 @@ app.post('/api/blogs', (req, res) => {
       faqs: Array.isArray(faqs) ? faqs : []
     };
 
-    data.blogs.unshift(newBlog);
+    let newBlog = blogData;
+    if (mongoose.connection.readyState === 1) {
+      newBlog = await BlogPost.create(blogData);
+    }
+
+    const data = getDbData();
+    if (!data.blogs) data.blogs = [];
+    data.blogs.unshift(blogData);
     saveDbData(data);
 
     res.status(201).json({ success: true, message: 'Blog post created', blog: newBlog });
   } catch (err) {
+    console.error('Error creating blog:', err);
     res.status(500).json({ success: false, error: 'Failed to create blog post' });
   }
 });
 
-// PUT /api/blogs/:id -> Update blog post
-app.put('/api/blogs/:id', (req, res) => {
+app.put('/api/blogs/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const data = getDbData();
-    const index = data.blogs.findIndex(b => b.id === id || b._id === id);
+    let updatedBlog = null;
 
-    if (index === -1) {
+    if (mongoose.connection.readyState === 1) {
+      const query = {
+        $or: [
+          { id },
+          { slug: id },
+          { _id: mongoose.Types.ObjectId.isValid(id) ? id : null }
+        ]
+      };
+      updatedBlog = await BlogPost.findOneAndUpdate(query, req.body, { returnDocument: 'after' }).lean();
+    }
+
+    const data = getDbData();
+    const index = (data.blogs || []).findIndex(b => b.id === id || b._id === id || b.slug === id);
+    if (index !== -1) {
+      data.blogs[index] = { ...data.blogs[index], ...req.body };
+      if (!updatedBlog) updatedBlog = data.blogs[index];
+      saveDbData(data);
+    }
+
+    if (!updatedBlog) {
       return res.status(404).json({ success: false, error: 'Blog not found' });
     }
 
-    data.blogs[index] = {
-      ...data.blogs[index],
-      ...req.body,
-      id: data.blogs[index].id,
-      _id: data.blogs[index]._id
-    };
-
-    saveDbData(data);
-
-    res.json({ success: true, message: 'Blog post updated', blog: data.blogs[index] });
+    res.json({ success: true, message: 'Blog post updated', blog: updatedBlog });
   } catch (err) {
     res.status(500).json({ success: false, error: 'Failed to update blog post' });
   }
 });
 
-// DELETE /api/blogs/:id -> Delete blog post
-app.delete('/api/blogs/:id', (req, res) => {
+app.delete('/api/blogs/:id', async (req, res) => {
   try {
     const { id } = req.params;
+    let deleted = false;
+
+    if (mongoose.connection.readyState === 1) {
+      const query = {
+        $or: [
+          { id },
+          { slug: id },
+          { _id: mongoose.Types.ObjectId.isValid(id) ? id : null }
+        ]
+      };
+      const result = await BlogPost.findOneAndDelete(query);
+      if (result) deleted = true;
+    }
+
     const data = getDbData();
-    data.blogs = data.blogs.filter(b => b.id !== id && b._id !== id);
+    const initialLen = (data.blogs || []).length;
+    data.blogs = (data.blogs || []).filter(b => b.id !== id && b._id !== id && b.slug !== id);
+    if (data.blogs.length < initialLen) deleted = true;
     saveDbData(data);
+
+    if (!deleted) {
+      return res.status(404).json({ success: false, error: 'Blog post not found' });
+    }
+
     res.json({ success: true, message: 'Blog post deleted' });
   } catch (err) {
     res.status(500).json({ success: false, error: 'Failed to delete blog post' });
@@ -499,27 +638,29 @@ app.delete('/api/blogs/:id', (req, res) => {
 // ==========================================
 // ENQUIRIES & BOOKINGS
 // ==========================================
-
-// GET /api/enquiries -> Get all contact enquiries
-app.get('/api/enquiries', (req, res) => {
-  const data = getDbData();
-  res.json({
-    success: true,
-    count: data.enquiries.length,
-    enquiries: data.enquiries
-  });
+app.get('/api/enquiries', async (req, res) => {
+  try {
+    let enquiries = [];
+    if (mongoose.connection.readyState === 1) {
+      enquiries = await Enquiry.find().sort({ createdAt: -1 }).lean();
+    } else {
+      const data = getDbData();
+      enquiries = data.enquiries || [];
+    }
+    res.json({ success: true, count: enquiries.length, enquiries });
+  } catch (err) {
+    res.status(500).json({ success: false, error: 'Failed to fetch enquiries' });
+  }
 });
 
-// POST /api/enquiries -> Submit new customer enquiry
-app.post('/api/enquiries', (req, res) => {
+app.post('/api/enquiries', async (req, res) => {
   try {
     const { name, phone, email, message, product } = req.body;
     if (!phone) {
       return res.status(400).json({ success: false, error: 'Phone number is required' });
     }
 
-    const data = getDbData();
-    const newEnquiry = {
+    const enqData = {
       id: `enq-${Date.now()}`,
       name: name || 'Customer',
       phone,
@@ -529,7 +670,13 @@ app.post('/api/enquiries', (req, res) => {
       createdAt: new Date().toISOString()
     };
 
-    data.enquiries.unshift(newEnquiry);
+    let newEnquiry = enqData;
+    if (mongoose.connection.readyState === 1) {
+      newEnquiry = await Enquiry.create(enqData);
+    }
+
+    const data = getDbData();
+    data.enquiries.unshift(enqData);
     saveDbData(data);
 
     res.status(201).json({
@@ -542,35 +689,50 @@ app.post('/api/enquiries', (req, res) => {
   }
 });
 
-// DELETE /api/enquiries/:id
-app.delete('/api/enquiries/:id', (req, res) => {
-  const { id } = req.params;
-  const data = getDbData();
-  data.enquiries = data.enquiries.filter(e => e.id !== id);
-  saveDbData(data);
-  res.json({ success: true, message: 'Enquiry deleted' });
+app.delete('/api/enquiries/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    let deleted = false;
+    if (mongoose.connection.readyState === 1) {
+      const query = { $or: [{ id }, { _id: mongoose.Types.ObjectId.isValid(id) ? id : null }] };
+      const result = await Enquiry.findOneAndDelete(query);
+      if (result) deleted = true;
+    }
+    const data = getDbData();
+    const initialLen = data.enquiries.length;
+    data.enquiries = data.enquiries.filter(e => e.id !== id && e._id !== id);
+    if (data.enquiries.length < initialLen) deleted = true;
+    saveDbData(data);
+
+    res.json({ success: true, message: 'Enquiry deleted' });
+  } catch (err) {
+    res.status(500).json({ success: false, error: 'Failed to delete enquiry' });
+  }
 });
 
-// GET /api/bookings -> Get DPF service bookings
-app.get('/api/bookings', (req, res) => {
-  const data = getDbData();
-  res.json({
-    success: true,
-    count: data.bookings.length,
-    bookings: data.bookings
-  });
+app.get('/api/bookings', async (req, res) => {
+  try {
+    let bookings = [];
+    if (mongoose.connection.readyState === 1) {
+      bookings = await Booking.find().sort({ createdAt: -1 }).lean();
+    } else {
+      const data = getDbData();
+      bookings = data.bookings || [];
+    }
+    res.json({ success: true, count: bookings.length, bookings });
+  } catch (err) {
+    res.status(500).json({ success: false, error: 'Failed to fetch bookings' });
+  }
 });
 
-// POST /api/bookings -> Book DPF cleaning appointment
-app.post('/api/bookings', (req, res) => {
+app.post('/api/bookings', async (req, res) => {
   try {
     const { customerName, phone, vehicleModel, preferredDate } = req.body;
     if (!phone || !vehicleModel) {
       return res.status(400).json({ success: false, error: 'Phone number and vehicle model are required' });
     }
 
-    const data = getDbData();
-    const newBooking = {
+    const bookData = {
       id: `book-${Date.now()}`,
       customerName: customerName || 'Valued Customer',
       phone,
@@ -580,7 +742,13 @@ app.post('/api/bookings', (req, res) => {
       createdAt: new Date().toISOString()
     };
 
-    data.bookings.unshift(newBooking);
+    let newBooking = bookData;
+    if (mongoose.connection.readyState === 1) {
+      newBooking = await Booking.create(bookData);
+    }
+
+    const data = getDbData();
+    data.bookings.unshift(bookData);
     saveDbData(data);
 
     res.status(201).json({
@@ -593,47 +761,63 @@ app.post('/api/bookings', (req, res) => {
   }
 });
 
-// DELETE /api/bookings/:id
-app.delete('/api/bookings/:id', (req, res) => {
-  const { id } = req.params;
-  const data = getDbData();
-  data.bookings = data.bookings.filter(b => b.id !== id);
-  saveDbData(data);
-  res.json({ success: true, message: 'Booking deleted' });
-});
+app.delete('/api/bookings/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    let deleted = false;
+    if (mongoose.connection.readyState === 1) {
+      const query = { $or: [{ id }, { _id: mongoose.Types.ObjectId.isValid(id) ? id : null }] };
+      const result = await Booking.findOneAndDelete(query);
+      if (result) deleted = true;
+    }
+    const data = getDbData();
+    const initialLen = data.bookings.length;
+    data.bookings = data.bookings.filter(b => b.id !== id && b._id !== id);
+    if (data.bookings.length < initialLen) deleted = true;
+    saveDbData(data);
 
-// ==========================================
-// REVIEWS ENDPOINTS (ADMIN + USER SIDE)
-// ==========================================
-
-// GET /api/reviews -> Fetch all customer reviews
-app.get('/api/reviews', (req, res) => {
-  const includeHidden = req.query.all === 'true';
-  const data = getDbData();
-  let reviews = data.reviews || [];
-  if (!includeHidden) {
-    reviews = reviews.filter(r => r.active !== false);
+    res.json({ success: true, message: 'Booking deleted' });
+  } catch (err) {
+    res.status(500).json({ success: false, error: 'Failed to delete booking' });
   }
-  reviews.sort((a, b) => (a.order || 0) - (b.order || 0));
-  res.json({
-    success: true,
-    count: reviews.length,
-    reviews
-  });
 });
 
-// POST /api/reviews -> Create new customer review
-app.post('/api/reviews', (req, res) => {
+// ==========================================
+// REVIEWS ENDPOINTS
+// ==========================================
+app.get('/api/reviews', async (req, res) => {
+  try {
+    const includeHidden = req.query.all === 'true';
+    let reviews = [];
+    if (mongoose.connection.readyState === 1) {
+      const query = includeHidden ? {} : { active: { $ne: false } };
+      reviews = await Review.find(query).sort({ order: 1 }).lean();
+    } else {
+      const data = getDbData();
+      reviews = data.reviews || [];
+      if (!includeHidden) {
+        reviews = reviews.filter(r => r.active !== false);
+      }
+      reviews.sort((a, b) => (a.order || 0) - (b.order || 0));
+    }
+    res.json({
+      success: true,
+      count: reviews.length,
+      reviews
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, error: 'Failed to fetch reviews' });
+  }
+});
+
+app.post('/api/reviews', async (req, res) => {
   try {
     const { customerName, customerImage, rating, reviewText, relativeTime, googleReviewLink, order, active } = req.body;
     if (!customerName || !reviewText) {
       return res.status(400).json({ success: false, error: 'Customer name and review text are required' });
     }
 
-    const data = getDbData();
-    if (!data.reviews) data.reviews = [];
-
-    const newReview = {
+    const revData = {
       id: `rev-${Date.now()}`,
       customerName: customerName.trim(),
       customerImage: customerImage || '',
@@ -641,12 +825,19 @@ app.post('/api/reviews', (req, res) => {
       reviewText: reviewText.trim(),
       relativeTime: relativeTime || 'recently',
       googleReviewLink: googleReviewLink || '',
-      order: Number(order) || (data.reviews.length + 1),
+      order: Number(order) || 1,
       active: active !== undefined ? Boolean(active) : true,
       createdAt: new Date().toISOString()
     };
 
-    data.reviews.push(newReview);
+    let newReview = revData;
+    if (mongoose.connection.readyState === 1) {
+      newReview = await Review.create(revData);
+    }
+
+    const data = getDbData();
+    if (!data.reviews) data.reviews = [];
+    data.reviews.push(revData);
     saveDbData(data);
 
     res.status(201).json({
@@ -659,48 +850,58 @@ app.post('/api/reviews', (req, res) => {
   }
 });
 
-// PUT /api/reviews/:id -> Edit existing review
-app.put('/api/reviews/:id', (req, res) => {
+app.put('/api/reviews/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const data = getDbData();
-    const index = (data.reviews || []).findIndex(r => r.id === id);
+    let updatedReview = null;
 
-    if (index === -1) {
-      return res.status(404).json({ success: false, error: 'Review not found' });
+    if (mongoose.connection.readyState === 1) {
+      const query = { $or: [{ id }, { _id: mongoose.Types.ObjectId.isValid(id) ? id : null }] };
+      updatedReview = await Review.findOneAndUpdate(query, req.body, { returnDocument: 'after' }).lean();
     }
 
-    data.reviews[index] = {
-      ...data.reviews[index],
-      ...req.body,
-      id: data.reviews[index].id
-    };
+    const data = getDbData();
+    const index = (data.reviews || []).findIndex(r => r.id === id || r._id === id);
+    if (index !== -1) {
+      data.reviews[index] = { ...data.reviews[index], ...req.body };
+      if (!updatedReview) updatedReview = data.reviews[index];
+      saveDbData(data);
+    }
 
-    saveDbData(data);
+    if (!updatedReview) {
+      return res.status(404).json({ success: false, error: 'Review not found' });
+    }
 
     res.json({
       success: true,
       message: 'Review updated successfully!',
-      review: data.reviews[index]
+      review: updatedReview
     });
   } catch (err) {
     res.status(500).json({ success: false, error: 'Failed to update review' });
   }
 });
 
-// DELETE /api/reviews/:id -> Delete review
-app.delete('/api/reviews/:id', (req, res) => {
+app.delete('/api/reviews/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const data = getDbData();
-    const initialLen = (data.reviews || []).length;
-    data.reviews = (data.reviews || []).filter(r => r.id !== id);
+    let deleted = false;
 
-    if (data.reviews.length === initialLen) {
-      return res.status(404).json({ success: false, error: 'Review not found' });
+    if (mongoose.connection.readyState === 1) {
+      const query = { $or: [{ id }, { _id: mongoose.Types.ObjectId.isValid(id) ? id : null }] };
+      const result = await Review.findOneAndDelete(query);
+      if (result) deleted = true;
     }
 
+    const data = getDbData();
+    const initialLen = (data.reviews || []).length;
+    data.reviews = (data.reviews || []).filter(r => r.id !== id && r._id !== id);
+    if (data.reviews.length < initialLen) deleted = true;
     saveDbData(data);
+
+    if (!deleted) {
+      return res.status(404).json({ success: false, error: 'Review not found' });
+    }
 
     res.json({
       success: true,
@@ -712,10 +913,12 @@ app.delete('/api/reviews/:id', (req, res) => {
 });
 
 // Start Express Server
-const serverPort = process.env.PORT || 5000;
-app.listen(serverPort, () => {
-  console.log(`Backend Express server running on port ${serverPort}`);
-  console.log(`Admin portal available at http://localhost:${serverPort}/admin`);
-});
+if (require.main === module) {
+  const serverPort = process.env.PORT || 5000;
+  app.listen(serverPort, () => {
+    console.log(`Backend Express server running on port ${serverPort}`);
+    console.log(`Admin portal available at http://localhost:${serverPort}/admin`);
+  });
+}
 
 module.exports = app;
