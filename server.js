@@ -57,10 +57,32 @@ app.use((req, res, next) => {
   next();
 });
 
-// Serve static admin dashboard from /admin
+// Serve static admin dashboard from /admin & public assets
+app.use(express.static(path.join(__dirname, 'public')));
 app.use('/admin', express.static(path.join(__dirname, 'public', 'admin')));
 app.use('/images', express.static(path.join(__dirname, 'public', 'images')));
 app.use('/public', express.static(path.join(__dirname, 'public')));
+
+// Universal static image route matching any subfolder prefix
+app.get(['*/images/:filename', '*/public/images/:filename', '/images/:filename', '/public/images/:filename'], (req, res) => {
+  const filename = req.params.filename;
+  const filePath = path.join(__dirname, 'public', 'images', filename);
+  if (fs.existsSync(filePath)) {
+    return res.sendFile(filePath);
+  }
+  const svgPlaceholder = `<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 24 24" fill="#cbd5e1"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>`;
+  res.setHeader('Content-Type', 'image/svg+xml');
+  res.status(200).send(svgPlaceholder);
+});
+
+// Favicon handler
+app.get(['/favicon.ico', '*/favicon.ico'], (req, res) => {
+  const icoPath = path.join(__dirname, 'public', 'admin', 'favicon.ico');
+  if (fs.existsSync(icoPath)) {
+    return res.sendFile(icoPath);
+  }
+  res.status(204).end();
+});
 
 // Explicit handler for /admin route
 app.get(['/admin', '/admin/'], (req, res) => {
