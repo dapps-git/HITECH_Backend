@@ -13,6 +13,7 @@ const Service = require('./models/Service');
 const BlogPost = require('./models/BlogPost');
 const Review = require('./models/Review');
 const Admin = require('./models/Admin');
+const bcrypt = require('bcryptjs');
 
 const upload = multer({ storage: multer.memoryStorage() });
 
@@ -58,6 +59,7 @@ app.use((req, res, next) => {
 
 // Serve static admin dashboard from /admin
 app.use('/admin', express.static(path.join(__dirname, 'public', 'admin')));
+app.use('/images', express.static(path.join(__dirname, 'public', 'images')));
 app.use('/public', express.static(path.join(__dirname, 'public')));
 
 // Explicit handler for /admin route
@@ -156,9 +158,12 @@ app.post('/api/admin/login', async (req, res) => {
     // 1. Check MongoDB Atlas Admin collection
     if (mongoose.connection.readyState === 1) {
       const adminDoc = await Admin.findOne({ email: emailInput }).lean();
-      if (adminDoc && adminDoc.password === passwordInput) {
-        authenticated = true;
-        adminName = adminDoc.name || adminName;
+      if (adminDoc) {
+        const isMatch = bcrypt.compareSync(passwordInput, adminDoc.password) || adminDoc.password === passwordInput;
+        if (isMatch) {
+          authenticated = true;
+          adminName = adminDoc.name || adminName;
+        }
       }
     }
 

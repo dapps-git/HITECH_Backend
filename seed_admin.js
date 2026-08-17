@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
 require('dotenv').config();
 const Admin = require('./models/Admin');
 
@@ -11,16 +12,18 @@ async function seedAdmin() {
     console.log('Connected!');
 
     const adminEmail = 'highqualityadmin@gmail.com';
-    const adminPass = 'highqualityadmin12345';
+    const rawPassword = 'highqualityadmin12345';
+    const hashedPassword = bcrypt.hashSync(rawPassword, 10);
 
     await Admin.findOneAndUpdate(
       { email: adminEmail },
-      { email: adminEmail, password: adminPass, name: 'Hi-Quality Admin' },
+      { email: adminEmail, password: hashedPassword, name: 'Hi-Quality Admin' },
       { upsert: true, returnDocument: 'after', setDefaultsOnInsert: true }
     );
 
-    console.log('Successfully stored Admin credentials in MongoDB Atlas!');
+    console.log('Successfully stored ENCRYPTED Admin credentials in MongoDB Atlas!');
     console.log(`Email: ${adminEmail}`);
+    console.log(`Hashed Password: ${hashedPassword}`);
 
     await mongoose.disconnect();
     process.exit(0);
