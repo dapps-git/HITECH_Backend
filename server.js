@@ -967,12 +967,10 @@ app.delete('/api/reviews/:id', async (req, res) => {
 });
 
 // Start Express Server
-if (require.main === module) {
-  const serverPort = process.env.PORT || 5000;
-  app.listen(serverPort, () => {
-    console.log(`Backend Express server running on port ${serverPort}`);
-    console.log(`Admin portal available at http://localhost:${serverPort}/admin`);
-  });
-}
+const serverPort = process.env.PORT || 5000;
+app.listen(serverPort, () => {
+  console.log(`Backend Express server running on port ${serverPort}`);
+  console.log(`Admin portal available at http://localhost:${serverPort}/admin`);
+});
 
 module.exports = app;
