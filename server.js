@@ -46,7 +46,7 @@ app.use((req, res, next) => {
   if (req.url.startsWith('/hiquality/admin/api')) {
     req.url = req.url.replace('/hiquality/admin/api', '/api');
   } else if (req.url.startsWith('/hiquality/admin')) {
-    req.url = req.url.replace('/hiquality/admin', '') || '/';
+    req.url = req.url.replace('/hiquality/admin', '/admin');
   } else if (req.url.startsWith('/hiquality/api')) {
     req.url = req.url.replace('/hiquality/api', '/api');
   } else if (req.url.startsWith('/hiquality')) {
@@ -64,7 +64,13 @@ app.use('/images', express.static(path.join(__dirname, 'public', 'images')));
 app.use('/public', express.static(path.join(__dirname, 'public')));
 
 // Universal static image route matching any subfolder prefix
-app.get(['*/images/:filename', '*/public/images/:filename', '/images/:filename', '/public/images/:filename'], (req, res) => {
+app.get([
+  '/images/:filename',
+  '/public/images/:filename',
+  '/admin/images/:filename',
+  '/hiquality/admin/images/:filename',
+  '/hiquality/images/:filename'
+], (req, res) => {
   const filename = req.params.filename;
   const filePath = path.join(__dirname, 'public', 'images', filename);
   if (fs.existsSync(filePath)) {
@@ -76,7 +82,12 @@ app.get(['*/images/:filename', '*/public/images/:filename', '/images/:filename',
 });
 
 // Favicon handler
-app.get(['/favicon.ico', '*/favicon.ico'], (req, res) => {
+app.get([
+  '/favicon.ico',
+  '/admin/favicon.ico',
+  '/hiquality/admin/favicon.ico',
+  '/public/favicon.ico'
+], (req, res) => {
   const icoPath = path.join(__dirname, 'public', 'admin', 'favicon.ico');
   if (fs.existsSync(icoPath)) {
     return res.sendFile(icoPath);
@@ -84,8 +95,8 @@ app.get(['/favicon.ico', '*/favicon.ico'], (req, res) => {
   res.status(204).end();
 });
 
-// Explicit handler for /admin route
-app.get(['/admin', '/admin/'], (req, res) => {
+// Explicit handler for root and /admin routes
+app.get(['/', '/admin', '/admin/'], (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'admin', 'index.html'));
 });
 
